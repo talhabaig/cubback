@@ -105,12 +105,12 @@ const router = new Router({
        ],
     }, 
     {
-      path: "/login",
-      redirect: "/login",
+      path: "/logina",
+      redirect: "/logina",
       component: () => import("../views/Layouts/account"),
       children: [
         {
-          path: "/login",
+          path: "/logina",
           name: "login",
           component: () => import("../views/Layouts/account/login.vue"),
         },
@@ -124,6 +124,19 @@ const router = new Router({
           name: "forgot",
           component: () => import("../views/Layouts/account/forgot.vue"),
         },
+      ],
+    },
+    {
+      path: "/login",
+      redirect: "/login",
+      component: () => import("../views/Layouts/user"),
+      children: [
+        {
+          path: "/login",
+          name: "login",
+          component: () => import("../views/user/login.vue"),
+        },
+        
       ],
     },
   ],
