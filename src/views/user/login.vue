@@ -1,49 +1,52 @@
 <template>
-  <v-card class="mx-auto" max-width="344" style="background-color:rgb(248, 147, 45)">
+  <v-card class="mx-auto" style="background-image: 'url(../../assets/logos/bgcopy.jpg)'">
     <v-card-text>
-          <div class="father">
-            <div class="child">
-              <div class="text-center">
-                <img
-                  src="../../assets/logos/Frigg_Logo_F_Tekst_Vertikal_gul.png"
-                  class="my-10 white"
-                  alt="Symphony"
-                  width="auto"
-                  height="130px"
-                />
-                <router-view />
-              </div>
-            </div>
+      <div class="father">
+        <div class="child">
+          <div class="text-center">
+            <img
+              src="../../assets/logos/Frigg_Logo_F_Tekst_Vertikal_hvit.png"
+              class="my-10"
+              alt="Symphony"
+              width="auto"
+              height="130px"
+            />
+            <router-view />
           </div>
+        </div>
+      </div>
     </v-card-text>
     <v-card-text class="login-card">
       <v-card-text>
-        <div class="mb-3" style="color: #f8932d">
-          <h4 class="text-center">WELCOME</h4>
-        </div
+        <div class="mb-3" style="color: #F19B28">
+          <h4 class="text-center" style="font-weight:bold">WELCOME</h4>
+        </div>
         <div>
-          <h5 class="text-center">Login to your Account</h5>
+          <h5 class="text-center regularFont" >Login to your Account</h5>
         </div>
       </v-card-text>
       <v-card-text>
         <form>
-          <v-label>E-mail Address
-          </v-label>
-          <v-text-field class="login-field" 
+          <h5 class="regularFont"> E-mail Address </h5>
+          <v-text-field
             v-model="loginForm.user_email"
             :error-messages="user_emailErrors"
-            placeholder="info@friggkantine.com"
+            placeholder=" info@friggkantine.com"
             required
             color="blue darken-3"
-            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            :type="showPassword ? 'text' : 'password'"
             @input="$v.loginForm.user_email.$touch()"
             @blur="$v.loginForm.user_email.$touch()"
-          ></v-text-field>
+          >
+            <template slot="append">
+              <img
+                src="../../assets/logos/Icon material-email.png"
+                height="15px"
+              />
+            </template>
+          </v-text-field>
 
-          <v-label> Password
-          </v-label>
-          <v-text-field class="login-field"
+          <h5> Password </h5>
+          <v-text-field
             v-model="loginForm.user_password"
             :error-messages="user_passwordErrors"
             color="blue darken-3"
@@ -58,21 +61,9 @@
           <v-btn block class="mt-4" color="main_bg_color" dark @click="submit">
             Login
           </v-btn>
-         
         </form>
       </v-card-text>
     </v-card-text>
-    <!-- <v-card-actions>
-      <v-btn
-        color="main_bg_color"
-        block
-        dark
-        class="pa-5"
-        @click="redirectToSignUp()"
-      >
-        Sign Up
-      </v-btn>
-    </v-card-actions> -->
   </v-card>
 </template>
 <script>
@@ -109,20 +100,20 @@ export default {
     user_emailErrors() {
       const errors = [];
       if (!this.$v.loginForm.user_email.$dirty) return errors;
-      !this.$v.loginForm.user_email.email && errors.push("Must be valid e-mail");
-      !this.$v.loginForm.user_email.required && errors.push("E-mail is required");
+      !this.$v.loginForm.user_email.email &&
+        errors.push("Must be valid e-mail");
+      !this.$v.loginForm.user_email.required &&
+        errors.push("E-mail is required");
       return errors;
     },
   },
 
   methods: {
     submit() {
-     
       this.$v.$touch();
       if (!this.$v.$invalid) {
         this.$store.dispatch("signInUser", this.loginForm).then((response) => {
-         
-          if (response.success) { 
+          if (response.success) {
             this.$router.push({ name: "userList" });
           } else {
             Swal.fire({
@@ -155,15 +146,14 @@ export default {
 </script>
 <style>
 .login-card {
-  border-top-left-radius: 34px; 
-  border-top-right-radius:34px; 
-  background-color:#fff;
-}
-.white{
-  background-color:white;
+  border-top-left-radius: 34px;
+  border-top-right-radius: 34px;
+  background-color: #fff;
 }
 .login-field {
   background-color: #ceedff66;
 }
-
+.regularFont{
+font-weight:regular
+}
 </style>
