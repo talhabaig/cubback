@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto" style="background-image: 'url(../../assets/logos/bgcopy.jpg)'">
+  <v-card class="mx-auto my-auto bg-img">
     <v-card-text>
       <div class="father">
         <div class="child">
@@ -18,17 +18,31 @@
     </v-card-text>
     <v-card-text class="login-card">
       <v-card-text>
-        <div class="mb-3" style="color: #F19B28">
-          <h4 class="text-center" style="font-weight:bold">WELCOME</h4>
+        <div class="mb-5" style="color: #f19b28">
+          <h4 class="text-center login-font" style="font-weight: bold;font-size:50px">WELCOME</h4>
         </div>
         <div>
-          <h5 class="text-center regularFont" >Login to your Account</h5>
+          <h5 class="text-center regularFont login-font" style="font-size:30px;">Login to your Account</h5>
         </div>
       </v-card-text>
       <v-card-text>
         <form>
-          <h5 class="regularFont"> E-mail Address </h5>
-          <v-text-field
+          <h5 class="regularFont login-font" style="">Email Address</h5>
+          <div class="right-inner-addon input-container">
+            <i
+              ><img
+                src="../../assets/logos/Icon material-email.png"
+                height="15px"
+            /></i>
+
+            <input
+              v-model="loginForm.user_email"
+              type="text"
+              class="form-control login-field "
+              placeholder="info@friggkantine.com"
+            />
+          </div>
+          <!-- <v-text-field
             v-model="loginForm.user_email"
             :error-messages="user_emailErrors"
             placeholder=" info@friggkantine.com"
@@ -43,10 +57,26 @@
                 height="15px"
               />
             </template>
-          </v-text-field>
+          </v-text-field> -->
 
-          <h5> Password </h5>
-          <v-text-field
+          <h5 class="regularFont login-font">Password</h5>
+
+          <div class="right-inner-addon input-container">
+            <i  @click="showPassword = !showPassword"
+              ><img @click="showPassword = !showPassword"
+                src="../../assets/logos/Icon ionic-md-eye-off.png"
+                height="18px"
+            /></i>
+
+            <input
+              v-model="loginForm.user_password"
+              class="form-control login-field"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Password"
+              
+            />
+          </div>
+          <!-- <v-text-field
             v-model="loginForm.user_password"
             :error-messages="user_passwordErrors"
             color="blue darken-3"
@@ -57,7 +87,7 @@
             @input="$v.loginForm.user_password.$touch()"
             @blur="$v.loginForm.user_password.$touch()"
             @click:append="showPassword = !showPassword"
-          ></v-text-field>
+          ></v-text-field> -->
           <v-btn block class="mt-4" color="main_bg_color" dark @click="submit">
             Login
           </v-btn>
@@ -150,10 +180,43 @@ export default {
   border-top-right-radius: 34px;
   background-color: #fff;
 }
-.login-field {
-  background-color: #ceedff66;
+.login-field { 
+    border-radius: 10px;
+  background-color:#ECF5F7;
+  border-block: initial;
 }
-.regularFont{
-font-weight:regular
+.login-font {
+  font-family:'Bebas Neue Pro'
+}
+.regularFont {
+  font-weight: "regular"; 
+}
+.bg-img {
+  background-image: url(../../assets/logos/bgcopy.jpg) !important;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.right-inner-addon {
+  position: relative;
+  padding-bottom: 20px;
+}
+.right-inner-addon input {
+  padding-right: 35px !important;
+}
+.right-inner-addon i {
+  position: absolute;
+  right: 0px;
+  padding: 12px 12px;
+  pointer-events: none;
+} 
+
+input {
+  width: 100%;
+  padding: 10px !important;
+  margin: 0em !important;
+  box-sizing: border-box;
+
 }
 </style>
