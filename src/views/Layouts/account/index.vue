@@ -16,16 +16,15 @@
             </div>
           </div> -->
       <v-row class="ma-0" style="min-height: 100% !important">
-        <v-col class="col-4 pa-0">
+        <v-col class="col-4 pa-0 mt-5">
           <div class="father">
             <div class="child">
               <div>
                 <img
-                  src="../../../assets/logos/Frigg_Logo_F_Tekst_Vertikal_gul.png"
-                  class="my-10"
-                  alt="Symphony"
+                  src="../../../assets/logos/Frigg_Logo_F_Tekst_Vertikal_gul.888942ba.svg" 
+                  alt="Cuboid"
                   width="auto"
-                  height="130px"
+                  height="150px"
                 />
                 <router-view />
               </div>

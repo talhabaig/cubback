@@ -1,10 +1,6 @@
 <template>
   <div>
     <div id="myTable">
-      <!-- <div class="col-md-10">
-        <h2 style="color: #f8932d">Fridge Canteen</h2>
-      </div> -->
-      <!-- <div :class="'R' + r" class="row" v-for="r in Row"> -->
       <div :class="'R' + r" class="row" v-for="(r, i) in row" :key="i">
         <div
           :class="'col-md-' + data.channel_width"
@@ -15,68 +11,101 @@
           class="channalDiv"
           v-if="data.row_number == r"
         >
-        <center>
-          <div
-            @click="
-              mergeChanal(
-                data,
-                getmachineById.filter((x) => x.row_number == r)
-              )
-            "
-          >
-            <i color="#f8932d" class="fas fa-object-ungroup">Merge</i>
-          </div>
-          <div v-if="data.channel_width > 1" @click="unmergeChanal(data)">
-            <i color="#f8932d" class="far fa-object-ungroup">Un Merge</i>
-          </div>
-          <div>
-            <div style="font-size: 12px" @click="chanalclick(data)">
-              <a>{{ data.channel_name }}</a>
+          <span
+            v-b-tooltip.hover
+            title="Remove Chanel"
+             v-if="hasPermission('product_remove')"
+            style="cursor: pointer; position: absolute; right: 0px; top: 0px"
+            @click="RemoveChanel(data, r)"
+            ><i class="fas fa-trash-alt"></i>
+          </span>
+          <center>
+            <div
+              v-if="hasPermission('channel_delete')"
+              @click="
+                mergeChanal(
+                  data,
+                  getmachineById.filter((x) => x.row_number == r)
+                )
+              "
+            >
+              <span
+                style="cursor: pointer; margin: 5px"
+                v-b-tooltip.hover
+                title="Merge"
+              >
+                <i color="#f8932d" class="fas fa-object-ungroup"></i>
+              </span>
             </div>
-          </div>
-          <span v-if="data.channel_product_quantity">{{
-            data.channel_product_quantity
-          }}</span>
-
-          <span v-if="data.products">
-            {{ data.products.product_name }} <br />
+            <div v-if="data.channel_width > 1 && hasPermission('channel_unmerge')" @click="unmergeChanal(data)">
+              <span
+                style="cursor: pointer; margin: 5px"
+                v-b-tooltip.hover
+                title="Un Merge"
+              >
+                <i color="#f8932d" class="far fa-object-ungroup"></i
+              ></span>
+            </div>
+            <div>
+              <div
+                v-b-tooltip.hover
+                title="Channel Number"
+                style="cursor: pointer; margin: 5px; font-size: 12px"
+                @click="chanalclick(data)"
+              >
+                <a>{{ data.channel_name }}</a>
+              </div>
+            </div>
             <span
-              @click="RemoveQunatity(data)"
+              v-b-tooltip.hover
+              title="Product Quantity"
               v-if="data.channel_product_quantity"
-              ><i class="fas fa-trash-alt">Qunatity</i>
-            </span>
-            <span @click="AddQunatity(data)"
-              ><i class="fa fa-plus" aria-hidden="true">Qunatity</i></span
-            ></span
-          >
+              >{{ data.channel_product_quantity }}</span
+            >
+
+            <span v-b-tooltip.hover title="Product Name" v-if="data.products">
+              {{ data.products.product_name }} <br />
+              <span
+                style="cursor: pointer; margin: 5px"
+                v-b-tooltip.hover
+                title="Remove Quantity"
+                @click="RemoveQunatity(data)"
+                v-if="hasPermission('product_remove') && data.channel_product_quantity"
+                ><i class="fas fa-trash-alt"></i>
+              </span>
+              <span
+                style="cursor: pointer; margin: 5px"
+                v-b-tooltip.hover
+                title="Add Quantity"
+                @click="AddQunatity(data)"
+                 v-if="hasPermission('product_add')"
+                ><i class="fa fa-plus" aria-hidden="true"></i></span
+            ></span>
           </center>
         </div>
         <div class="col-md-1">
           <v-btn
+          v-b-tooltip.hover title="Add Channel"
             dark
             color="main_bg_color"
-            v-if="getmachineById.filter((x) => x.row_number == r).length < 10"
-            @click="addChanal(r)"
+            v-if="hasPermission('channel_create') && getmachineById.filter((x) => x.row_number == r).length < 10"
+            @click="addChanal(r,getmachineById.filter((x) => x.row_number == r))"
           >
             <i class="fas fa-plus mr-2"></i
           ></v-btn>
         </div>
-
-        <!-- <div
-          class="col-md-1 channalDiv"
-          v-for="(c, ndx) in machineModel.channel"
-          :key="ndx"
-          v-if="channalname(c.channel.channel_name) == 'R' + r"
-          @click="chanalclick(c)"
-        >
-          <center style="font-size: 12px">{{ c.channel.channel_name }}</center>
-          <span v-if="c.channel.channel_product_quantity">{{
-            c.channel.channel_product_quantity
-          }}</span>
-          <span v-if="c.product"> {{ c.product.product_name }}</span>
-        </div> -->
+        <div class="col-md-1">
+          <v-btn v-if="hasPermission('row_delete')" v-b-tooltip.hover title="Remove Row" dark color="main_bg_color" @click="delRow(r)">
+            <i class="fas fa-minus mr-2"></i
+          ></v-btn>
+        </div>
       </div>
     </div>
+    <v-card-actions v-if=" hasPermission('row_add') && row < 7" class="pt-5">
+      <v-btn dark color="main_bg_color" @click="addRow">
+        <i class="fas fa-plus mr-2"></i>Add Row</v-btn
+      >
+    </v-card-actions>
     <b-modal
       size="xl"
       id="addChannel"
@@ -88,6 +117,7 @@
       <template slot="modal-title">
         <span>Add Channel in Machine</span>
       </template>
+
       <v-row v-if="chanelModel">
         <v-col class="col-6">
           <v-text-field
@@ -119,24 +149,28 @@
           ></v-text-field>
         </v-col>
         <v-col class="col-6">
-          <v-text-field
-            v-model="chanelModel.column_number"
-            type="number"
-            label="Possition"
-          ></v-text-field>
+          <strong>Possition</strong>
+          <v-radio-group v-model="chanelModel.position" row>
+            <v-radio label="Start" value="start"></v-radio>
+            <v-radio label="End" value="end"></v-radio>
+            <v-radio label="Random" value="random"></v-radio>
+          </v-radio-group>
         </v-col>
-        <!-- <v-col class="col-6">
-          <v-text-field
-            v-model="chanelModel.channel_product_quantity"
-            label="Quantity"
-          ></v-text-field>
-        </v-col> -->
-
+        <v-col v-if="chanelModel.position == 'random'" class="col-6">
+          <v-select
+            :items="mergeRow"
+            item-value="_id"
+            item-text="channel_name"
+            v-model="chanelModel.channel_position"
+            label="Possition After Channel"
+            color="blue darken-3"
+          ></v-select>
+        </v-col>
         <v-col class="col-6">
           <strong>Status</strong>
           <v-radio-group v-model="chanelModel.channel_status" row>
-            <v-radio label="Active" value="active"></v-radio>
-            <v-radio label="InActive" value="inactive"></v-radio>
+            <v-radio label="Active" value="Active"></v-radio>
+            <v-radio label="InActive" value="InActive"></v-radio>
           </v-radio-group>
         </v-col>
         <v-col class="col-6">
@@ -213,8 +247,8 @@
         <v-col class="col-6">
           <strong>Status</strong>
           <v-radio-group v-model="chanelModel.channel_status" row>
-            <v-radio label="Active" value="active"></v-radio>
-            <v-radio label="InActive" value="inactive"></v-radio>
+            <v-radio label="Active" value="Active"></v-radio>
+            <v-radio label="InActive" value="InActive"></v-radio>
           </v-radio-group>
         </v-col>
         <v-col class="col-6">
@@ -254,8 +288,8 @@
       style="height: 500px"
       no-close-on-backdrop
     >
-      <template slot="modal-title">
-        <span>Add Quantity</span>
+     <template slot="modal-title">
+        <span>Add Quantity </span>
       </template>
       <v-row>
         <v-col class="col-6">
@@ -290,6 +324,15 @@
       style="height: 500px"
       no-close-on-backdrop
     >
+      <b-modal
+        size="sm"
+        id="addRow"
+        hide-footer
+        centered
+        style="height: 500px"
+        no-close-on-backdrop
+      >
+      </b-modal>
       <template slot="modal-title">
         <span>Remove Quantity</span>
       </template>
@@ -318,7 +361,6 @@
         </v-col>
       </v-row>
     </b-modal>
-
     <b-modal
       size="sm"
       id="mergeChannal"
@@ -359,8 +401,54 @@
         </v-col>
       </v-row>
     </b-modal>
+
+    <b-modal
+      size="lg"
+      id="addRow"
+      hide-footer
+      centered
+      style="height: 500px"
+      no-close-on-backdrop
+    >
+      <template slot="modal-title">
+        <span>Add Row</span>
+      </template>
+      <v-row>
+        <v-col class="col-6">
+          <strong>Possition</strong>
+          <v-radio-group v-model="rowModel.row_position" row>
+            <v-radio label="Start" value="start"></v-radio>
+            <v-radio label="End" value="end"></v-radio>
+            <v-radio label="Random" value="random"></v-radio>
+          </v-radio-group>
+        </v-col>
+        <v-col v-if="rowModel.row_position == 'random'" class="col-6">
+          <v-select
+            :items="rowsNumber"
+            v-model="rowModel.row_number"
+            label="Possition After Row"
+            color="blue darken-3"
+          ></v-select>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col class="col-12">
+          <v-btn
+            class="mr-4"
+            style="margin: 10px"
+            dark
+            color="main_bg_color"
+            @click="submit_NewRow"
+          >
+            submit
+          </v-btn>
+          <v-btn style="margin: 10px" @click="clear"> Close </v-btn>
+        </v-col>
+      </v-row>
+    </b-modal>
   </div>
 </template>
+
 <script>
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";
@@ -371,7 +459,7 @@ export default {
   mixins: [validationMixin],
   validations: {},
   data: () => ({
-    row: null,
+    row: null, permissions: [],
     mergeWith: null,
     mergeRow: null,
     selectedChanalForMerge: null,
@@ -387,23 +475,55 @@ export default {
       channel_status: "",
       row_number: 0,
     },
+    remchanel: {
+      channel_id: "",
+      machine_id: "",
+      row_number: 0,
+    },
+
+    rowModel: {
+      row_position: "",
+      row_number: "",
+    },
   }),
   computed: {
-    ...mapGetters(["getcanteenList", "getproductList", "getmachineById"]),
+
+    ...mapGetters(["getcanteenList", "getproductList", "userDetails", "getmachineById"]),
+    rowsNumber() {
+      var rown = [];
+      for (var i = 1; i <= this.row; i++) {
+        rown.push(i);
+      }
+      return rown;
+    },
   },
   watch: {},
   methods: {
+     hasPermission(obj) {
+      if (
+        this.userDetails &&
+        this.userDetails.user &&
+        this.userDetails.user.user_role == "super_admin"
+      ) {
+        return true;
+      } else {
+        return this.userDetails.permissions.permission_name.includes(obj);
+      }
+    },
     channalname(obj) {
-      debugger;
       return obj.substring(0, 2);
     },
-    addChanal(obj) {
+    addChanal(obj, array) {
       this.chanelModel.row_number = obj;
+      this.mergeRow = array;
       this.$bvModal.show("addChannel");
     },
+    addRow() {
+      this.$bvModal.show("addRow");
+    },
+
     mergeChanal(obj, array) {
-      debugger;
-      this.selectedChanalForMerge = null
+      this.selectedChanalForMerge = null;
       this.mergeWith = obj;
       var index = array.findIndex((e) => e._id == obj._id);
       var prev = array[index - 1];
@@ -425,6 +545,9 @@ export default {
         "getmachinechannels",
         this.getmachineById[0].machine_id
       );
+      this.row = this.getmachineById.filter(
+        (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+      ).length;
     },
     AddQunatity(obj) {
       this.quantityModel.channel_id = obj._id;
@@ -438,6 +561,28 @@ export default {
       this.quantityModel.product_id = obj.channel_product_id;
       this.$bvModal.show("removeQuantity");
     },
+    RemoveChanel(obj, r) {
+      this.remchanel.channel_id = obj._id;
+      this.remchanel.machine_id = this.getmachineById[0].machine_id;
+      this.remchanel.row_number = r;
+      Swal.fire({
+        text: "Are you Sure ,you want to Delete This Channel",
+        showCancelButton: true,
+        confirmButtonText: "Yes, I am",
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          await this.$store.dispatch("delchanel", this.remchanel);
+          await this.$store.dispatch(
+            "getmachinechannels",
+            this.remchanel.machine_id
+          );
+          this.row = this.getmachineById.filter(
+            (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+          ).length;
+        }
+      });
+    },
     clear() {
       this.$bvModal.hide("addQuantity");
       this.$bvModal.hide("mergeChannal");
@@ -448,21 +593,58 @@ export default {
         "getmachinechannels",
         this.chanelModel.machine_id
       );
+      this.row = this.getmachineById.filter(
+        (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+      ).length;
       this.machineModel = this.getmachineById;
       this.$bvModal.hide("updateChannel");
     },
     async addChannelinrow() {
-      debugger;
-      this.chanelModel.machine_id = this.getmachineById[0].machine_id;
+        this.chanelModel.machine_id = this.getmachineById[0].machine_id;
       await this.$store.dispatch("addChannel", this.chanelModel);
       await this.$store.dispatch(
         "getmachinechannels",
         this.chanelModel.machine_id
       );
+      this.row = this.getmachineById.filter(
+        (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+      ).length;
       this.$bvModal.hide("addChannel");
     },
+    async delRow(r) {
+      this.chanelModel.machine_id = this.getmachineById[0].machine_id;
+      this.chanelModel.row_number = r;
+      Swal.fire({
+        text: "Are you Sure ,you want to Delete Entire row",
+        showCancelButton: true,
+        confirmButtonText: "Yes, I am",
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          await this.$store.dispatch("delRow", this.chanelModel);
+          await this.$store.dispatch(
+            "getmachinechannels",
+            this.chanelModel.machine_id
+          );
+          this.row = this.getmachineById.filter(
+            (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+          ).length;
+        }
+      });
+    },
+    async submit_NewRow() {
+      this.rowModel.machine_id = this.getmachineById[0].machine_id;
+      await this.$store.dispatch("addRow", this.rowModel);
+      await this.$store.dispatch(
+        "getmachinechannels",
+        this.rowModel.machine_id
+      );
+      this.row = this.getmachineById.filter(
+        (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+      ).length;
+      this.$bvModal.hide("addRow");
+    },
     // async RemoveQunatity(obj) {
-    //   debugger;
 
     //   await this.$store.dispatch("addChannel", this.chanelModel);
     //   await this.$store.dispatch(
@@ -480,6 +662,9 @@ export default {
         "getmachinechannels",
         this.getmachineById[0].machine_id
       );
+      this.row = this.getmachineById.filter(
+        (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+      ).length;
       this.$bvModal.hide("addQuantity");
     },
     async submit_mergChannal() {
@@ -491,6 +676,9 @@ export default {
         "getmachinechannels",
         this.getmachineById[0].machine_id
       );
+      this.row = this.getmachineById.filter(
+        (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+      ).length;
       this.$bvModal.hide("mergeChannal");
     },
     async remQuantity() {
@@ -502,6 +690,9 @@ export default {
         "getmachinechannels",
         this.getmachineById[0].machine_id
       );
+      this.row = this.getmachineById.filter(
+        (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
+      ).length;
       this.$bvModal.hide("removeQuantity");
     },
 
@@ -515,26 +706,23 @@ export default {
     },
   },
   mounted() {
+        this.permissions = this.userDetails.permissions;
     this.row = this.getmachineById.filter(
       (v, i, a) => a.findIndex((t) => t.row_number === v.row_number) === i
     ).length;
-    // if (this.getmachineById) {
-    //   debugger;
-    //   this.machineModel = this.getmachineById;
-    // }
   },
   destroyed() {
     this.$store.dispatch("resetmachineState");
   },
 };
 </script>
+
+
 <style scoped>
 .channalDiv {
   border-style: solid;
   border-color: #f8932d;
+  position: relative;
   transition: 1s all;
 }
-/* #myTable {
-  padding-left: 30%;
-} */
 </style>

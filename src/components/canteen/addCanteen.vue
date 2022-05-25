@@ -1,65 +1,102 @@
 <template>
-  <form>
-    <v-row>
-   
-      <v-col class="col-6">
-        <v-select
-          :items="getuserList"
-          item-value="_id"
-          item-text="user_name"
-          v-model="canteenModel.food_supplier_id"
-          label="Food Supplier"
-          color="blue darken-3"
+  <v-row>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Machine Filler <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <i
+          ><img
+            src="../../assets/logos/bxs-down-arrow.svg"
+            height="7px"
+        /></i>
+        <select
+          v-model="canteenModel.machine_filler_id"
+          class="form-control login-field"
         >
-         <template v-slot:label>
-            <div>Food Supplier <small style="color: red">*</small></div>
-          </template>
-        </v-select>
-      </v-col>
-      <v-col class="col-6">
-        <v-text-field
+          <option
+            v-for="(d, i) in getmachinefillerList"
+            :key="i"
+            :value="d._id"
+          >
+            {{ d.user_name }}
+          </option>
+        </select>
+      </div>
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Canteen Admin <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <i
+          ><img
+            src="../../assets/logos/bxs-down-arrow.svg"
+            height="7px"
+        /></i>
+        <select
+          v-model="canteenModel.canteen_admin_id"
+          class="form-control login-field"
+        >
+          <option v-for="(d, i) in getcanteenAdminList" :key="i" :value="d._id">
+            {{ d.user_name }}
+          </option>
+        </select>
+      </div>
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Name <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input
           v-model="canteenModel.canteen_name"
-          :error-messages="canteen_nameErrors"
-          label="Name"
-          required
-          color="blue darken-3"
-          @input="$v.canteenModel.canteen_name.$touch()"
-          @blur="$v.canteenModel.canteen_name.$touch()"
-        >   <template v-slot:label>
-            <div>Name <small style="color: red">*</small></div>
-          </template></v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <v-text-field
+          type="text"
+          class="form-control login-field"
+        />
+      </div>
+      <div class="invalid-feedback" v-if="$v.canteenModel.canteen_name.$error">
+        <span v-if="$v.canteenModel.canteen_name.$error">Name is required</span>
+      </div>
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Location <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input
           v-model="canteenModel.canteen_location"
-          :error-messages="canteen_locationErrors"
-          label="Location"
-          required
-          color="blue darken-3"
-          @input="$v.canteenModel.canteen_location.$touch()"
-          @blur="$v.canteenModel.canteen_location.$touch()"
+          type="text"
+          class="form-control login-field"
+        />
+      </div>
+      <div
+        class="invalid-feedback"
+        v-if="$v.canteenModel.canteen_location.$error"
+      >
+        <span v-if="$v.canteenModel.canteen_location.$error"
+          >Location is required</span
         >
-        <template v-slot:label>
-            <div>Location <small style="color: red">*</small></div>
-          </template>
-        </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <strong>Status</strong>
-        <v-radio-group v-model="canteenModel.canteen_status" row>
-          <v-radio label="Active" value="active"></v-radio>
-          <v-radio label="InActive" value="inactive"></v-radio>
-        </v-radio-group>
-      </v-col>
+      </div>
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Status <small style="color: red">*</small></label
+      >
 
-      <v-col class="col-12">
-        <v-btn class="mr-4" dark color="main_bg_color" @click="submit">
-          submit
-        </v-btn>
-        <v-btn @click="clear"> Close </v-btn>
-      </v-col>
-    </v-row>
-  </form>
+      <v-radio-group v-model="canteenModel.canteen_status" row>
+        <v-radio label="Active" value="Active"></v-radio>
+        <v-radio label="InActive" value="InActive"></v-radio>
+      </v-radio-group>
+    </v-col>
+    <v-col class="col-12 d-flex justify-center">
+      <v-btn class="mr-4 modal-btn btnn" @click="clear"> Close </v-btn>
+
+      <v-btn class="modal-btn" dark color="main_bg_color" @click="submit">
+        {{canteenModel._id ? 'Update':'Submit'}}
+      </v-btn>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import { validationMixin } from "vuelidate";
@@ -73,45 +110,63 @@ export default {
     canteenModel: {
       canteen_name: { required },
       canteen_location: { required },
-      canteen_status: { required },
     },
   },
-   props: ["isEdit"],
+  props: ["isEdit"],
   data: () => ({
     canteenModel: {
       canteen_name: "",
+      canteen_admin_id: "",
+      machine_filler_id: "",
       canteen_location: "",
-      canteen_status: "active",
+      canteen_status: "Active",
     },
   }),
 
   computed: {
-    ...mapGetters(["getcanteenById", "getuserList"]),
-
-    canteen_nameErrors() {
+    ...mapGetters([
+      "getcanteenById",
+      "getfoodSupplierList",
+      "getmachinefillerList",
+      "getcanteenAdminList",
+    ]),
+    foodSupplierErrors() {
       const errors = [];
-      if (!this.$v.canteenModel.canteen_name.$dirty) return errors;
-      !this.$v.canteenModel.canteen_name.required && errors.push("canteen name is required.");
+      if (!this.$v.canteenModel.machine_filler_id.$dirty) return errors;
+      !this.$v.canteenModel.machine_filler_id.required &&
+        errors.push("Food Supplier is required");
+      return errors;
+    },
+    canteen_admin_Errors() {
+      const errors = [];
+      if (!this.$v.canteenModel.canteen_admin_id.$dirty) return errors;
+      !this.$v.canteenModel.canteen_admin_id.required &&
+        errors.push("Canteen Admin_id is required");
       return errors;
     },
     canteen_locationErrors() {
       const errors = [];
       if (!this.$v.canteenModel.canteen_location.$dirty) return errors;
       !this.$v.canteenModel.canteen_location.required &&
-        errors.push("canteen location is required.");
+        errors.push("Canteen_Location is required");
+      return errors;
+    },
+    canteen_nameErrors() {
+      const errors = [];
+      if (!this.$v.canteenModel.canteen_name.$dirty) return errors;
+      !this.$v.canteenModel.canteen_name.required &&
+        errors.push("canteen name is required.");
       return errors;
     },
   },
 
   methods: {
-    fetchData() {
-    },
+    fetchData() {},
     submit() {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         if (this.canteenModel._id == null) {
           this.$store.dispatch("addcanteen", this.canteenModel).then((res) => {
-            debugger;
             if (res.success) {
               Swal.fire({
                 text:
@@ -168,19 +223,14 @@ export default {
         this.$emit("closeIt");
     },
   },
-   watch: { 
-    getuserList: {
-      handler: function () {
-        this.items = this.getuserList.filter((x) => {
-          return x.user_role == "user";
-        });
-      },
-    },
-  },
+  watch: {},
   mounted() {
-    debugger
     if (this.isEdit && this.getcanteenById) {
       this.canteenModel = this.getcanteenById;
+      this.canteenModel.machine_filler_id =
+        this.getcanteenById.machine_filler_id._id;
+      this.canteenModel.canteen_admin_id =
+        this.getcanteenById.canteen_admin_id._id;
     }
   },
   destroyed() {
@@ -188,3 +238,11 @@ export default {
   },
 };
 </script>
+<style>
+.right-inner-addon i {
+    position: absolute;
+    right: 0px;
+    padding: 8px 12px;
+    pointer-events: none;
+}
+</style>

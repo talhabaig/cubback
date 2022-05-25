@@ -1,126 +1,125 @@
 <template>
   <div>
-    <v-card class="d-flex justify-space-around align-center mb-10">
+    <div class="d-flex justify-space-around align-center mb-2 mt-3">
       <v-card-text>
-        <p class="text-h4 text--primary mb-0">
-          <i class="fas fa-stream Orders mr-2 main_color"></i>
-          Inventory
-        </p>
+        <div class="pageHeadingIcon">
+          <div class="pageName">
+            <svg class="pageNameSvg userManagmentIcon">
+              <use xlink:href="#productManagment"></use>
+            </svg>
+          </div>
+          <h2>Inventory List</h2>
+        </div>
       </v-card-text>
-      <v-card-actions class="pa-5">
-        <v-dialog
-          v-model="dialog"
-          transition="dialog-top-transition"
-          scrollable
-          width="1024px"
-        >
-          <!-- <template v-slot:activator="{ on, attrs }">
-            <v-btn dark color="main_bg_color" v-bind="attrs" v-on="on">
-              <i class="fas fa-plus mr-2"></i>Add Inventory</v-btn
+
+     </div>
+    <div class="tableWrapper">
+      <table class="row mx-0" id="myTable">
+        <thead class="px-0">
+          <tr class="tableHead">
+            <th class="status">Image</th>
+            <th class="name">Name</th>
+            <th class="email" style="border: none">Quantity</th>
+          </tr>
+        </thead>
+        <tbody class="px-0">
+          <tr
+            v-for="(data, index) in getinventoryList"
+            :key="index"
+            class="px-0 tabledata"
+          >
+            <td
+               class="statusdata"
+              style="width: 20%"
             >
-          </template> -->
-          <!-- <template v-if="dialog" v-slot:default="dialog">
-            <v-card>
-              <v-toolbar color="main_bg_color" dark class="mb-2">
-                <span v-if="isEdit == false"
-                  ><i class="fas fa-stream Orders mr-2"></i>Add Inventory</span
+              <img
+                height="50"
+                width="50"
+                style="border-radius:50%"
+                :src="imgProduct(data.product_image)"
+                alt=""
+              />
+            </td>
+            
+            <td class="namedata">{{ data.product_name }}</td>
+            <td class="emaildata">{{ data.TotalQuantity }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagiNationWrapper">
+      <p v-if="getinventoryList">
+        Showing {{ currentPage }}-{{ getinventoryList.length }}
+        of
+        {{ getinventoryListTotal }} results
+      </p>
+      <p v-else>Showing 0-0 of 0 results</p>
+      <ul class="pagiNation">
+        <li @click="updateCurrentPage(currentPage - 1)" class="pagiNation-item">
+          <a class="page-link">
+            <svg class="svgIconLeft">
+              <use xlink:href="#leftIcon"></use>
+            </svg>
+          </a>
+        </li>
+        <li @click="updateCurrentPage(currentPage)" class="pagiNation-item">
+          <span class="page-link activepage"> {{ currentPage }}</span>
+        </li>
+        <li @click="updateCurrentPage(currentPage + 1)" class="pagiNation-item">
+          <span class="page-link"> {{ currentPage + 1 }}</span>
+        </li>
+        <li @click="updateCurrentPage(currentPage + 2)" class="pagiNation-item">
+          <span class="page-link"> {{ currentPage + 2 }}</span>
+        </li>
+        <li @click="updateCurrentPage(currentPage + 1)" class="pagiNation-item">
+          <a class="page-link">
+            <svg class="svgIconNext">
+              <use xlink:href="#rightIcon"></use>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <v-card-actions class="pa-5">
+      <v-dialog
+        v-model="delDialog"
+        transition="dialog-top-transition"
+        scrollable
+      >
+        <template v-if="delDialog" v-slot:default="delDialog">
+          <v-card>
+            <v-toolbar
+              class="mb-2 text-center justify-center b-border m-2"
+              style="box-shadow: none"
+            >
+              <span
+                style="font-size: 30px !important; font-weight: 800 !important"
+                >Warning</span
+              >
+              <span @click="closeModel" class="crossPossition">
+                <img src="../../../assets/logos/Icon metro-cross.svg" />
+              </span>
+            </v-toolbar>
+
+            <v-card-text class="pt-10 text-h6">
+              Do you want to delete this Inventory?
+
+              <v-col class="col-12 d-flex justify-space-around">
+                <v-btn
+                  class="mr-4 modal-btn"
+                  dark
+                  color="main_bg_color"
+                  @click="YesModel"
                 >
-                <span v-else
-                  ><i class="fas fa-stream Orders mr-2"></i>Edit Inventory</span
-                >
-              </v-toolbar>
-              <v-card-text>
-                <addInventory @closeIt="closeModel"></addInventory>
-              </v-card-text>
-            </v-card>
-          </template> -->
-        </v-dialog>
-      </v-card-actions>
-    </v-card>
-    <v-card>
-      <v-card-title>
-        Inventory List
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-select
-          :items="getcanteenList"
-          item-value="_id"
-          :clearable="true"
-          item-text="canteen_name"
-          v-model="canteen_id"
-          label="Canteen"
-          @change="onChangeCanteen"
-          color="blue darken-3"
-        ></v-select>
-        <v-spacer></v-spacer>
-        <v-select
-          :items="getmachineList"
-          :clearable="true"
-          item-value="_id"
-          item-text="machine_name"
-          v-model="machine_id"
-          @change="onChangeMachine"
-          label="Machine"
-          color="blue darken-3"
-        ></v-select>
-        <v-spacer></v-spacer>
-        <v-select
-          :items="getproductList"
-          :clearable="true"
-          item-value="_id"
-          item-text="product_name"
-          v-model="product_id"
-          label="Product"
-          @change="onChangeProduct"
-          color="blue darken-3"
-        ></v-select>
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          color="blue darken-3"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-data-table :headers="headers" :items="items" :search="search">
-        <!-- @click="" -->
-        <template v-slot:[`item.actions`]="{ item }">
-          <v-icon class="mr-2 edit_btn" @click.stop="editItem(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon @click="warningModel(item._id)" class="del_btn">
-            mdi-delete
-          </v-icon>
+                  Yes
+                </v-btn>
+                <v-btn class="modal-btn" @click="closeWarningModel"> No </v-btn>
+              </v-col>
+            </v-card-text>
+          </v-card>
         </template>
-      </v-data-table>
-    </v-card>
-    <template>
-      <v-dialog v-model="delDialog" max-width="400">
-        <v-card>
-          <v-card-title class="text-h5 orange lighten-1 text-white">
-            Warning
-          </v-card-title>
-          <v-card-text class="pt-10 text-h6">
-            Do you want to delete entry?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-
-            <v-btn color="green darken-1" text @click="closeWarningModel()">
-              Disagree
-            </v-btn>
-
-            <v-btn color="deep-orange darken-4" text @click="deleteItem()">
-              Agree
-            </v-btn>
-          </v-card-actions>
-        </v-card>
       </v-dialog>
-    </template>
+    </v-card-actions>
   </div>
 </template>
 <script>
@@ -133,11 +132,13 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
       machine_id: "",
       product_id: "",
       canteen_id: "",
       isEdit: false,
       dialog: false,
+      permissions: [],
       delDialog: false,
       allowDel: false,
       itemId: "",
@@ -148,85 +149,91 @@ export default {
           text: "Name",
           align: "start",
           sortable: true,
-          value: "productName",
+          value: "product_name",
         },
         {
           text: "Quantity",
           align: "start",
           sortable: true,
-          value: "Quantity",
+          value: "TotalQuantity",
         },
       ],
       items: [],
     };
   },
+   watch: {
+    currentPage: {
+      handler: function () {
+        this.fetchData();
+      },
+    },
+  
+  },
   methods: {
+    imgProduct(obj) {
+      if (obj && obj.startsWith("http")) {
+        return obj.replace("/public", "");
+      }
+    },
+    hasPermission(obj) {
+      if (
+        this.userDetails &&
+        this.userDetails.user &&
+        this.userDetails.user.user_role == "super_admin"
+      ) {
+        return true;
+      } else {
+        return this.userDetails.permissions.permission_name.includes(obj);
+      }
+    },
     async fetchData() {
-      await this.$store.dispatch("getcanteensList");
-      await this.$store.dispatch("productsList");
-      await this.$store.dispatch("machinesList", null);
-      await this.$store.dispatch("inventoryList").then((res) => {
-        if (res) {
-          this.items = this.getinventoryList;
-        }
+      await this.$store.dispatch("getcanteensList", { pagination: true });
+      await this.$store.dispatch("productsList", { pagination: true });
+      await this.$store.dispatch("machinesList", { pagination: true });
+      await this.$store.dispatch("inventoryList", {
+        resultPerPage: 10,
+        currentPage: this.currentPage,
       });
       this.isfetching = true;
-      // await this.$store
-      //   .dispatch("inventorysList")
-      //   .then((response) => {
-      //     console.log(response);
-      //     this.isfetching = false;
-      //     // this.items = this.getinventoryList;
-      //   })
-      //   .catch((ex) => {
-      //     this.isfetching = false;
-      //     console.log(ex);
-      //   });
     },
     async onChangeCanteen(obj) {
       if (obj) {
-        await this.$store.dispatch("machinesList", obj)
-          .then((response) => { 
-             this.getmachineList;
-          }) 
+        await this.$store.dispatch("machinesList", obj).then((response) => {
+          this.getmachineList;
+        });
         await this.$store
-          .dispatch("inventoryList", "canteen/" + obj)
-          .then((res) => {
-            if (res) {
-              this.items = this.getinventoryList;
-            }
-          });
-      }else{
-      await  this.fetchData()
+          .dispatch("inventoryList", {
+            machine_id: this.machine_id,
+            product_id: this.product_id,
+            canteen_id: obj,
+          })
+          .then((res) => {});
+      } else {
+        await this.fetchData();
+      }
+    },
+    updateCurrentPage(obj) {
+      if (obj >= 1) {
+        this.currentPage = obj;
       }
     },
     async onChangeMachine(obj) {
-      if (obj) {
-
-        await this.$store.dispatch("getProductByMachineId",obj)
-        await this.$store
-          .dispatch("inventoryList", "machine/" + obj)
-          .then((res) => {
-            if (res) {
-              this.items = this.getinventoryList;
-            }
-          });
-      }else{
-      await  this.fetchData()
-      }
+      await this.$store
+        .dispatch("inventoryList", {
+          machine_id: obj,
+          product_id: this.product_id,
+          canteen_id: this.canteen_id,
+        })
+        .then((res) => {});
     },
     async onChangeProduct(obj) {
-      if (obj) {
-        await this.$store
-          .dispatch("inventoryList", "product/" + obj)
-          .then((res) => {
-            if (res) {
-              this.items = this.getinventoryList;
-            }
-          });
-      }else{
-      await  this.fetchData()
-      }
+      await this.$store
+        .dispatch("inventoryList", {
+          machine_id: this.machine_id,
+          product_id: obj,
+          canteen_id: this.canteen_id,
+        })
+        .then((res) => {});
     },
     editItem(obj) {
       this.$store.dispatch("getinventoryById", obj);
@@ -241,7 +248,6 @@ export default {
     },
 
     warningModel(id) {
-      console.log(id);
       this.delDialog = true;
       this.itemId = id;
     },
@@ -262,9 +268,7 @@ export default {
       this.delDialog = false;
       this.itemId = "";
 
-      this.fetchData().catch((error) => {
-        console.error(error);
-      });
+      this.fetchData();
     },
   },
   destroyed() {
@@ -272,14 +276,38 @@ export default {
   },
   mounted() {
     this.fetchData();
+    this.permissions = this.userDetails.permissions;
   },
   computed: {
     ...mapGetters([
       "getinventoryList",
       "getmachineList",
       "getproductList",
+      "getinventoryListTotal",
       "getcanteenList",
+      "userDetails",
     ]),
   },
 };
 </script>
+
+<style scoped>
+.bg-clr {
+  background-color: #ecf5f7;
+}
+.v-input__slot:before {
+  border: none;
+}
+.v-card__actions > .v-btn.v-btn {
+  padding: 0 20px;
+}
+.theme--light.v-data-table thead {
+  background-color: #747474 !important;
+}
+.b-border {
+  border-bottom: 1px solid #f8932d;
+}
+</style>
+
+
+   

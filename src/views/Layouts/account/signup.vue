@@ -91,7 +91,7 @@ export default {
 
   validations: {
     signUpForm: {
-      name: { required, maxLength: maxLength(10) },
+      name: { required, maxLength: maxLength(30) },
       role: { required },
       phone: { required, maxLength: maxLength(15) },
       email: { required, email },

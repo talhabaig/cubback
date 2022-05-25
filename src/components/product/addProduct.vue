@@ -1,8 +1,21 @@
 <template>
-  <form>
-    <v-row>
-      <v-col class="col-6">
-        <v-text-field
+  <v-row>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Product Name <small style="color: red">*</small></label
+      > 
+      <div class="right-inner-addon input-container pb-0">
+        <input
+          v-model="productModel.product_name"
+          type="text"
+          class="form-control login-field"
+          placeholder=" Product Name"
+        />
+      </div>
+         <div class="invalid-feedback" v-if="$v.productModel.product_name.$error">
+        <span v-if="$v.productModel.product_name.$error">Product is required</span>
+      </div>
+      <!-- <v-text-field
           v-model="productModel.product_name"
           :error-messages="product_nameErrors"
           label="Name"
@@ -11,13 +24,30 @@
           @input="$v.productModel.product_name.$touch()"
           @blur="$v.productModel.product_name.$touch()"
         >
-        <template v-slot:label>
+          <template v-slot:label>
             <div>Product Name <small style="color: red">*</small></div>
           </template>
-        </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <v-text-field
+        </v-text-field> -->
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Price <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input
+          v-model="productModel.product_price"
+          :error-messages="product_priceErrors"
+          label="Price"
+          required
+          type="number"
+          class="form-control login-field"
+          placeholder="Price"
+        />
+      </div>
+        <div class="invalid-feedback" v-if="$v.productModel.product_price.$error">
+        <span v-if="$v.productModel.product_price.$error">Price is required</span>
+      </div>
+      <!-- <v-text-field
           v-model="productModel.product_price"
           :error-messages="product_priceErrors"
           label="Price"
@@ -27,44 +57,29 @@
           @input="$v.productModel.product_price.$touch()"
           @blur="$v.productModel.product_price.$touch()"
         >
-         <template v-slot:label>
+          <template v-slot:label>
             <div>Price <small style="color: red">*</small></div>
           </template>
-        </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <v-text-field
-          v-model="productModel.product_recipe"
-          :error-messages="product_recipeErrors"
-          label="Recipe"
+        </v-text-field> -->
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >VAT <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input
+          v-model="productModel.product_VAT"
+          :error-messages="product_priceErrors"
+          label="VAT"
+          type="number"
           required
-          color="blue darken-3"
-          @input="$v.productModel.product_recipe.$touch()"
-          @blur="$v.productModel.product_recipe.$touch()"
-        >
-         <template v-slot:label>
-            <div>Recipe <small style="color: red">*</small></div>
-          </template>
-        
-        </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <v-text-field
-          v-model="productModel.prdouct_allergic"
-          :error-messages="prdouct_allergicErrors"
-          label="Allergic"
-          required
-          color="blue darken-3"
-          @input="$v.productModel.prdouct_allergic.$touch()"
-          @blur="$v.productModel.prdouct_allergic.$touch()"
-        >
-          <template v-slot:label>
-            <div>Allergic <small style="color: red">*</small></div>
-          </template>
-        </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <v-text-field
+          class="form-control login-field" 
+        />
+      </div>
+        <div class="invalid-feedback" v-if="$v.productModel.product_VAT.$error">
+        <span v-if="$v.productModel.product_VAT.$error">VAT is required</span>
+      </div>
+      <!-- <v-text-field
           v-model="productModel.product_VAT"
           :error-messages="product_VATErrors"
           label="VAT"
@@ -76,50 +91,31 @@
           <template v-slot:label>
             <div>VAT <small style="color: red">*</small></div>
           </template>
-        </v-text-field>
-      </v-col>
-      <!-- <v-col class="col-6">
-        <v-menu
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
+        </v-text-field> -->
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Category Name <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <i
+          ><img
+            src="../../assets/logos/bxs-down-arrow.svg"
+            height="7px"
+        /></i>
+        <select
+          v-model="productModel.product_catagory_id"
+          class="form-control login-field"
         >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="productModel.expiry_date"
-              label="Expiry Date"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="productModel.expiry_date" no-title scrollable>
-            <v-spacer></v-spacer>
-            <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
-            <v-btn text color="primary" @click="menu = false"> OK </v-btn>
-          </v-date-picker>
-        </v-menu>
-      </v-col> -->
-      <!-- <v-col class="col-6">
-        <v-text-field
-          v-model="productModel.category"
-          :error-messages="categoryErrors"
-          label="Category"
-          required
-          color="blue darken-3"
-          @input="$v.productModel.category.$touch()"
-          @blur="$v.productModel.category.$touch()"
-        ></v-text-field>
-      </v-col> -->
-
-      <v-col class="col-6">
-        <v-select
-          :items="getcategoryList"
-          item-value="_id"
+          <option v-for="(d, i) in getcategoryList" :key="i" :value="d._id">
+            {{ d.catagories_name }}
+          </option>
+        </select>
+      </div>
+       <div class="invalid-feedback" v-if="$v.productModel.product_catagory_id.$error">
+        <span v-if="$v.productModel.product_catagory_id.$error">Category is required</span>
+      </div>
+      <!-- <v-select 
           item-text="catagories_name"
           v-model="productModel.product_catagory_id"
           label="Category"
@@ -128,31 +124,51 @@
           <template v-slot:label>
             <div>Category Name <small style="color: red">*</small></div>
           </template>
-        </v-select>
-      </v-col>
-      <v-col class="col-6">
-        <label>Select Image </label> <small style="color: red">*</small>
-        <br />
-        <img :src="productModel.product_image" alt="" />
+        </v-select> -->
+    </v-col>
+    <v-col class="col-6">
+      <label>Select Image </label> <small style="color: red">*</small>
+      <br />
+      <img :src="productModel.product_image" alt="" />
+      <input
+        type="file"
+        id="file"
+        ref="file"
+        accept="image/jpg, image/jpeg, image/png"
+        @change="handleFileUpload()"
+      />
+       <div class="invalid-feedback" v-if="$v.productModel.product_image.$error">
+        <span v-if="$v.productModel.product_image.$error">Image is required</span>
+      </div>
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Status <small style="color: red">*</small></label
+      >
+
+      <v-radio-group v-model="productModel.product_status" row>
+        <v-radio label="Active" value="Active"></v-radio>
+        <v-radio label="InActive" value="InActive"></v-radio>
+      </v-radio-group>
+    </v-col>
+
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Description <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
         <input
-          type="file"
-          id="file"
-          ref="file"
-          accept="image/jpg, image/jpeg, image/png"
-         @change="handleFileUpload()"
+          v-model="productModel.product_description"
+          label="Description"
+          required
+          class="form-control login-field"
+          placeholder="Description"
         />
-      </v-col>
-      <v-col class="col-6">
-        <strong>Status</strong>
-
-        <v-radio-group v-model="productModel.product_status" row>
-          <v-radio label="Active" value="active"></v-radio>
-          <v-radio label="InActive" value="inactive"></v-radio>
-        </v-radio-group>
-      </v-col>
-
-      <v-col class="col-6">
-        <v-text-field
+      </div>
+        <div class="invalid-feedback" v-if="$v.productModel.product_description.$error">
+        <span v-if="$v.productModel.product_description.$error">Description is required</span>
+      </div>
+      <!-- <v-text-field
           v-model="productModel.product_description"
           :error-messages="product_descriptionErrors"
           label="Description"
@@ -160,20 +176,42 @@
           color="blue darken-3"
           @input="$v.productModel.product_description.$touch()"
           @blur="$v.productModel.product_description.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col class="col-12">
-        <v-btn class="mr-4" dark color="main_bg_color" @click="submit">
-          submit
-        </v-btn>
-        <v-btn @click="clear"> Close </v-btn>
-      </v-col>
-    </v-row>
-  </form>
+        >
+          <template v-slot:label>
+            <div>Description <small style="color: red">*</small></div>
+          </template></v-text-field
+        > -->
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Ingredients (e.g Soy,Nuts,Eggs)
+      </label>
+      <div class="right-inner-addon input-container pb-0">
+        <input
+          v-model="productModel.ingradients"
+          required
+          class="form-control login-field"
+          placeholder="Description"
+        />
+      </div>
+      <!-- <v-text-field
+          v-model="productModel.ingradients"
+          label="Ingredients (e.g Soy,Nuts,Eggs)"
+          required
+          color="blue darken-3"
+        ></v-text-field> -->
+    </v-col>
+    <v-col class="col-12 d-flex justify-center">
+      <v-btn class="mr-4 modal-btn btnn" @click="clear"> Close </v-btn>
+      <v-btn class="modal-btn" dark color="main_bg_color" @click="submit">
+        Submit
+      </v-btn>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import { validationMixin } from "vuelidate";
-import { required ,maxLength} from "vuelidate/lib/validators";
+import { required, maxLength } from "vuelidate/lib/validators";
 import { mapGetters } from "vuex";
 
 import Swal from "sweetalert2";
@@ -183,11 +221,11 @@ export default {
     productModel: {
       product_name: { required },
       product_price: { required },
-      product_recipe: { required },
-      prdouct_allergic: { required },
-      product_description: { maxLength: maxLength(50) },
+      product_description: { required, maxLength: maxLength(50) },
       product_VAT: { required },
       product_status: { required },
+      product_image: { required },
+      product_catagory_id: { required },
     },
   },
   data: () => ({
@@ -196,12 +234,13 @@ export default {
     productModel: {
       product_name: "",
       product_price: "",
-      product_recipe: "",
-      prdouct_allergic: "",
       product_VAT: "",
       product_description: "",
+      ingradients: "",
+      product_catagory_id: "",
+
       // category: "",
-      product_status: "active",
+      product_status: "Active",
       product_image: "",
     },
   }),
@@ -211,47 +250,37 @@ export default {
     product_nameErrors() {
       const errors = [];
       if (!this.$v.productModel.product_name.$dirty) return errors;
-      !this.$v.productModel.product_name.required && errors.push("Name is required.");
+      !this.$v.productModel.product_name.required &&
+        errors.push("Name is required.");
       return errors;
     },
     product_priceErrors() {
       const errors = [];
       if (!this.$v.productModel.product_price.$dirty) return errors;
-      !this.$v.productModel.product_price.required && errors.push("price is required.");
+      !this.$v.productModel.product_price.required &&
+        errors.push("price is required.");
       return errors;
     },
-    prdouct_allergicErrors() {
-      const errors = [];
-      if (!this.$v.productModel.prdouct_allergic.$dirty) return errors;
-      !this.$v.productModel.prdouct_allergic.required &&
-        errors.push("prdouct_allergic is required.");
-      return errors;
-    },
-    product_recipeErrors() {
-      const errors = [];
-      if (!this.$v.productModel.product_recipe.$dirty) return errors;
-      !this.$v.productModel.product_recipe.required &&
-        errors.push("product_recipe is required.");
-      return errors;
-    },
+
     product_VATErrors() {
       const errors = [];
       if (!this.$v.productModel.product_VAT.$dirty) return errors;
-      !this.$v.productModel.product_VAT.required && errors.push("VAT is required.");
+      !this.$v.productModel.product_VAT.required &&
+        errors.push("VAT is required.");
       return errors;
     },
     categoryErrors() {
       const errors = [];
-      if (!this.$v.productModel.category.$dirty) return errors;
-      !this.$v.productModel.category.required &&
+      if (!this.$v.productModel.product_catagory_id.$dirty) return errors;
+      !this.$v.productModel.product_catagory_id.required &&
         errors.push("category is required.");
       return errors;
     },
     product_descriptionErrors() {
       const errors = [];
       if (!this.$v.productModel.product_description.$dirty) return errors;
-      !this.$v.productModel.product_description.maxLength &&
-        errors.push("Description must be at most 50 characters long");
+      !this.$v.productModel.product_description.required &&
+        errors.push("Decription is required.");
       return errors;
     },
   },
@@ -263,46 +292,50 @@ export default {
 
     async submit() {
       this.$v.$touch();
-      if (!this.$v.$invalid) {
-        if (this.productModel._id == null) {
-          await this.$store
-            .dispatch("addproduct", this.productModel)
-            .then((res) => {
-              if (res.success) {
-                Swal.fire({
-                  title: "",
-                  text: res.message,
-                  icon: "success",
-                });
-              } else {
-                Swal.fire({
-                  title: "Error!",
-                  text: res.message,
-                  icon: "error",
-                });
-              }
-            });
-        } else {
-       await   this.$store
-            .dispatch("updateproduct", this.productModel)
-            .then((res) => {
-              if (res.success) {
-                Swal.fire({
-                  title: "",
-                  text: res.message,
-                  icon: "success",
-                });
-              } else {
-                Swal.fire({
-                  title: "Error!",
-                  text: res.message,
-                  icon: "error",
-                });
-              }
-            });
+      
+        if (!this.$v.$invalid) {
+          if (this.productModel._id == null) {
+            await this.$store
+              .dispatch("addproduct", this.productModel)
+              .then((res) => {
+                this.$emit("closeIt");
+                if (res.success) {
+                  Swal.fire({
+                    title: "",
+                    text: res.message,
+                    icon: "success",
+                  });
+                } else {
+                  Swal.fire({
+                    title: "Error!",
+                    text: res.message,
+                    icon: "error",
+                  });
+                }
+              });
+          } else {
+            await this.$store
+              .dispatch("updateproduct", this.productModel)
+              .then((res) => {
+                
+                this.$emit("closeIt");
+                if (res.success) {
+                  Swal.fire({
+                    title: "",
+                    text: res.message,
+                    icon: "success",
+                  });
+                } else {
+                  Swal.fire({
+                    title: "Error!",
+                    text: res.message,
+                    icon: "error",
+                  });
+                }
+              });
+          }
         }
-        this.$emit("closeIt");
-      }
+      
     },
     clear() {
       this.$v.$reset();
@@ -312,7 +345,10 @@ export default {
   },
   mounted() {
     if (this.getproductById) {
-      this.productModel = this.getproductById; 
+      this.productModel = this.getproductById;
+     this.productModel.product_catagory_id = this.productModel.product_catagory_id._id;
+      this.productModel.ingradients =
+        this.productModel.product_gradient.toString();
     }
   },
   destroyed() {
@@ -320,3 +356,11 @@ export default {
   },
 };
 </script>
+<style>
+.right-inner-addon i {
+    position: absolute;
+    right: 0px;
+    padding: 8px 12px;
+    pointer-events: none;
+}
+</style>

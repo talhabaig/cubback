@@ -9,16 +9,20 @@ export default {
     role: null,
     email: null,
     name: null,
+    route: null,
     userId: null,
     exp: 0,
     isAuthenticated: !!JwtService.getToken(),
   },
   getters: {
     userDetails(state) {
-      return state;
+      return state.user;
     },
     getExpTime(state) {
       return state.exp;
+    },
+    getRoutes(state) {
+      return state.route;
     },
     isUserAuthenticated(state) {
       return state.isAuthenticated;
@@ -26,7 +30,6 @@ export default {
   },
   actions: {
     async signUpUser({ commit }, data) {
-     
       return await axios
         .post(`${process.env.VUE_APP_API_URL}api/v1/registration/signup`, data)
         .then(function (response) {
@@ -37,79 +40,63 @@ export default {
         });
     },
 
-    async signInUser({ commit, getters ,dispatch}, data) {
+    async signInUser({ commit, getters, dispatch }, data) {
       return await axios
         .post(`${process.env.VUE_APP_API_URL}api/v1/registration/login`, data)
         .then((response) => {
-          dispatch('logOutAfterHour');  
-          commit("setSignInUsers", response.data.token);
+          dispatch('logOutAfterHour');
+          commit("setSignInUsers", response.data);
           return response.data;
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch((error) => {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
-    async forgotUser({ commit, getters }, data) {
-     
+    async forgotUser({ commit, getters }, data) { 
       return await axios
         .post(`${process.env.VUE_APP_API_URL}api/v1/registration/forgot`, data)
         .then((response) => {
-          return response.data;  
+          return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
     async logOut({ commit }) {
-     
+
       await commit("resetStateOnLogOut");
     },
-      logOutAfterHour({ commit }) {
-     
+    routes({ commit }, payload) {
+      commit("setroutes", payload);
+    },
+    logOutAfterHour({ commit }) {
+
       setTimeout(() => {
         commit("resetStateOnLogOut");
-      },  60 * 60 * 1000) 
-      setTimeout(() => {
-        console.log("TimeOut")
-      }, 60 * 60 * 1000) 
+      }, 60 * 60 * 1000)
+      setTimeout(() => { 
+      }, 60 * 60 * 1000)
     },
   },
   mutations: {
     setSignInUsers(state, payload) {
-     
 
-      JwtService.saveToken(payload);
-      // state.jwtToken = payload.token;
-
-      // var base64Url = payload.token.split(".")[1];
-      // var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      // var jsonPayload = decodeURIComponent(
-      //   atob(base64)
-      //     .split("")
-      //     .map(function (c) {
-      //       return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      //     })
-      //     .join("")
-      // );
-
-      // var parseToken = JSON.parse(jsonPayload);
-
-      // var resultObject = [];
-      // for (var i in parseToken) resultObject.push([i, parseToken[i]]);
-
-      // state.permissions = resultObject[4][1];
-      // state.role = resultObject[2][1];
-      // state.email = resultObject[1][1];
-      // state.name = resultObject[0][1];
-      // state.userId = resultObject[3][1];
-      // state.exp = resultObject[5][1];
-
+      state.user = payload;
+      JwtService.saveToken(payload.token);
       state.isAuthenticated = true;
+    },
+    setroutes(state, payload) {
+
+      state.route = payload;
     },
 
     resetStateOnLogOut(state) {
-     
+
       JwtService.destroyToken();
       state.jwtToken = null;
       state.permissions = [];

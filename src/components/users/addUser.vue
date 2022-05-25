@@ -1,8 +1,21 @@
 <template>
-  <form>
-    <v-row>
-      <v-col class="col-6">
-        <v-text-field
+  <v-row>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Full Name <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input
+          v-model="userModel.user_name"
+          type="text"
+          class="form-control login-field"
+          placeholder="Full Name"
+        />
+      </div>
+      <div class="invalid-feedback" v-if="$v.userModel.user_name.$error">
+        <span v-if="$v.userModel.user_name.$error">Name is required</span>
+      </div>
+      <!-- <v-text-field
           v-model="userModel.user_name"
           :error-messages="NameErrors"
           :counter="10"
@@ -15,12 +28,28 @@
           <template v-slot:label>
             <div>Name <small style="color: red">*</small></div>
           </template>
-        </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <v-select
+        </v-text-field> -->
+    </v-col>
+    <v-col v-if="!this.userModel._id" class="col-6">
+      <label class="regularFont login-font" style=""
+        >Email <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input 
+          v-model="userModel.user_email"
+          :error-messages="NameErrors"
+          :counter="10"
+          type="text"
+          class="form-control login-field"
+          placeholder="info@friggkantine.com"
+        />
+      </div>
+      <div class="invalid-feedback" v-if="$v.userModel.user_email.$error">
+        <span v-if="$v.userModel.user_email.$error">Email is in-valid</span>
+      </div>
+      <!-- <v-select
           v-model="userModel.user_role_id"
-          :items="getroleList"
+          :items="getActiveroleList"
           :error-messages="roleErrors"
           item-value="_id"
           item-text="role_name"
@@ -33,11 +62,27 @@
           <template v-slot:label>
             <div>Select Role <small style="color: red">*</small></div>
           </template>
-        </v-select>
-      </v-col>
+        </v-select> -->
+    </v-col>
 
-      <v-col class="col-6">
-        <v-text-field
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Phone Number <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input
+          v-model="userModel.user_phone"
+          :error-messages="NameErrors"
+          :counter="15"
+          type="tel"
+          class="form-control login-field"
+          placeholder="(123) 456-7890" 
+          maxlength="15" @input="enforcePhoneFormat()"    />
+      </div>
+      <div class="invalid-feedback" v-if="$v.userModel.user_phone.$error">
+        <span v-if="$v.userModel.user_phone.$error">Phone is required</span>
+      </div>
+      <!-- <v-text-field
           v-model="userModel.user_phone"
           label="Phone Number"
           required
@@ -45,15 +90,35 @@
           :error-messages="phoneNumberErrors"
           @input="enforcePhoneFormat"
           :counter="15"
-          @blur="$v.userModel.phone.$touch()"
         >
           <template v-slot:label>
             <div>Phone Number <small style="color: red">*</small></div>
           </template>
-        </v-text-field>
-      </v-col>
-      <v-col v-if="!this.userModel._id" class="col-6">
-        <v-text-field
+        </v-text-field> -->
+    </v-col>
+    <v-col v-if="!this.userModel._id" class="col-6">
+      <label class="regularFont login-font" style=""
+        >Password <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <!-- <i  @click="showPassword = !showPassword"
+              ><img @click="showPassword = !showPassword"
+                src="../../assets/logos/Icon-ionic-md-eye-off.png"
+                height="15px"
+                width="18px"
+            /></i> -->
+        <input
+          v-model="userModel.user_password"
+          :type="showPassword ? 'text' : 'password'"
+          class="form-control login-field"
+        />
+      </div>
+      <div class="invalid-feedback" v-if="$v.userModel.user_password.$error">
+        <span v-if="$v.userModel.user_password.$error"
+          >Password is required</span
+        >
+      </div>
+      <!-- <v-text-field
           v-model="userModel.user_email"
           :error-messages="emailErrors"
           label="E-mail"
@@ -65,10 +130,26 @@
           <template v-slot:label>
             <div>E-mail <small style="color: red">*</small></div>
           </template>
-        </v-text-field>
-      </v-col>
-      <v-col v-if="!this.userModel._id" class="col-6">
-        <v-text-field
+        </v-text-field> -->
+    </v-col>
+    <!-- <v-col v-if="!this.userModel._id" class="col-6"> -->
+    <!-- <label class="regularFont login-font" style="">Confirm Password <small style="color: red">*</small></label>
+          <div class="right-inner-addon input-container pb-0">
+            <i  @click="showPassword = !showPassword"
+              >
+              <img @click="showPassword = !showPassword"
+                src="../../assets/logos/Icon-ionic-md-eye-off.png"
+                height="15px"
+                  width="18px"
+            /></i>
+            <input
+              v-model="userModel.user_password"
+              :type="showPassword ? 'text' : 'password'"              
+              class="form-control login-field"
+              placeholder="Password"
+            />
+          </div> -->
+    <!-- <v-text-field
           v-model="userModel.user_password"
           :error-messages="passwordErrors"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -83,23 +164,71 @@
           <template v-slot:label>
             <div>Password <small style="color: red">*</small></div>
           </template>
-        </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <strong>Status</strong>
-        <v-radio-group v-model="userModel.user_status" row>
-          <v-radio label="Active" value="active"></v-radio>
-          <v-radio label="InActive" value="inactive"></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col class="col-12">
-        <v-btn class="mr-4" dark color="main_bg_color" @click="submit">
-          submit
-        </v-btn>
-        <v-btn @click="clear"> Close </v-btn>
-      </v-col>
-    </v-row>
-  </form>
+        </v-text-field> -->
+    <!-- </v-col> -->
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Select Role <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <i
+          ><img
+            src="../../assets/logos/bxs-down-arrow.svg"
+            height="7px"
+        /></i>
+        <select
+          v-model="userModel.user_role_id"
+          class="form-control login-field"
+        >
+          <option v-for="(d, i) in getroleList" :key="i" :value="d._id">
+            {{ d.role_name.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key, p1) 
+            {
+              return key.toUpperCase();    
+            }) }}
+          </option>
+        </select>
+      </div>
+      <div class="invalid-feedback" v-if="$v.userModel.user_role_id.$error">
+        <span v-if="$v.userModel.user_role_id.$error">Role is required</span>
+      </div>
+      <!-- <v-select
+          v-model="userModel.user_role_id"
+          :items="getActiveroleList"
+          :error-messages="roleErrors"
+          item-value="_id"
+          item-text="role_name"
+          label="Select role"
+          required
+          color="blue darken-3"
+          @change="$v.userModel.user_role_id.$touch()"
+          @blur="$v.userModel.user_role_id.$touch()"
+        >
+          <template v-slot:label>
+            <div>Select Role <small style="color: red">*</small></div>
+          </template>
+        </v-select> -->
+      <!-- <v-checkbox
+          v-model="userModel.white_list_user"
+          label="Is White List User"
+        ></v-checkbox> -->
+    </v-col>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Status <small style="color: red">*</small></label
+      >
+      <v-radio-group v-model="userModel.user_status" row>
+        <v-radio label="Active" value="Active"></v-radio>
+        <v-radio label="InActive" value="InActive"></v-radio>
+      </v-radio-group>
+    </v-col>
+    <v-col class="col-12 d-flex justify-center">
+      <v-btn class="mr-4 modal-btn btnn" @click="clear"> Close </v-btn>
+
+      <v-btn class="modal-btn" dark color="main_bg_color" @click="submit">
+        {{ userModel._id ? 'Update': 'Submit'}}
+      </v-btn>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import { validationMixin } from "vuelidate";
@@ -112,9 +241,9 @@ export default {
 
   validations: {
     userModel: {
-      user_name: { required, maxLength: maxLength(10) },
+      user_name: { required, maxLength: maxLength(30) },
       user_role_id: { required },
-      user_phone: { required, maxLength: maxLength(15) },
+      user_phone: { required, maxLength: maxLength(17) },
       user_email: { required, email },
       user_password: { required },
     },
@@ -129,12 +258,12 @@ export default {
       user_phone: "",
       user_email: "",
       user_password: "",
-      user_status: "active",
+      user_status: "Active",
     },
   }),
 
   computed: {
-    ...mapGetters(["getroleList", "getUserById"]),
+    ...mapGetters(["getActiveroleList", "getUserById", "getroleList"]),
 
     roleErrors() {
       const errors = [];
@@ -182,10 +311,6 @@ export default {
   },
 
   methods: {
-    //    acceptNumber() {
-    //       var x = this.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-    // this.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-    //   },
     enforcePhoneFormat() {
       let x = this.userModel.user_phone
         .replace(/\D/g, "")
@@ -195,45 +320,47 @@ export default {
         : "(" + x[1] + ") " + x[2] + (x[3] ? "-" + x[3] : "");
     },
     submit() {
+      
       this.$v.$touch();
-      debugger;
-        if (!this.userModel._id) {
-            if (!this.$v.$invalid) {
+      if (!this.userModel._id) {
+        if (!this.$v.$invalid) {
+          
           this.$store.dispatch("addUser", this.userModel).then((res) => {
+            
             if (res.success) {
               Swal.fire({
                 title: "",
-                text: res.message,
+                text: res.message == "user has added successfully" ? "User has added successfully" : res.message,
                 icon: "success",
               });
               this.$emit("closeIt");
             } else {
               Swal.fire({
                 title: "Error!",
-                text: res.message,
-                icon: "error",
-              });
-            }
-          });
-        }} else {
-          this.$store.dispatch("updateUser", this.userModel).then((res) => {
-            if (res.success) {
-              Swal.fire({
-                title: "",
-                text: res.message,
-                icon: "success",
-              });
-              this.$emit("closeIt");
-            } else {
-              Swal.fire({
-                title: "Error!",
-                text: res.message,
+                text: res.errors[0].msg  == "Password must be at least 6 chars long" ? "Password must be at least 6 characters long" : res.errors[0].msg,
                 icon: "error",
               });
             }
           });
         }
-      
+      } else {
+        this.$store.dispatch("updateUser", this.userModel).then((res) => {
+          if (res.success) {
+            Swal.fire({
+              title: "",
+              text: res.message,
+              icon: "success",
+            });
+            this.$emit("closeIt");
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: res.message,
+              icon: "error",
+            });
+          }
+        });
+      }
     },
     clear() {
       this.$v.$reset();
@@ -260,3 +387,29 @@ export default {
   },
 };
 </script>
+<style scoped>
+.login-field {
+  border-radius: 8px;
+  background-color: #ecf5f7;
+  border: none;
+}
+.p-2 {
+  padding: 0.5rem !important;
+}
+.form-control {
+  padding: 0.54rem 0.75rem;
+}
+.modal-btn {
+  height: 45px !important;
+  min-width: 70px !important;
+  padding: 0 55px !important;
+  box-shadow: none;
+}
+label {
+  font-size: 19px;
+  margin-bottom: 4px;
+}
+.right-inner-addon i {
+  padding: 8px 12px !important;
+}
+</style>

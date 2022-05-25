@@ -1,29 +1,12 @@
 <template>
-  <div>
-    <v-list-item class="px-2" style="background-color: white; height: 64px">
-      <v-img
-        v-if="this.drawerValue"
-        src="../../../assets/logos/Frigg_Logo_F_Tekst_Horisontal_gul (1).png"
-        alt="FRIGG KANTINE"
+  <div class="mt-5">
+    <v-list-item class="px-2" style="background-color: #F8932D; height: 64px">
+      <v-img 
+        src="../../../assets/logos/Frigg_Logo_F_Tekst_Horisontal_hvit.png"
         width="auto"
         height="50px"
       ></v-img>
-      <video autoplay loop  v-else width="50" height="50">
-        <source
-          src="../../../assets/logos/3D_BuildSpinYellowDouble_5.mp4"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-        <!-- Text to be shown incase browser doesnt support html5 -->
-      </video>
-      <!-- <v-img
-      v-else
-        src="../../../assets/logos/Frigg_Logo_F_gul.jpg"
-        alt="FRIGG KANTINE"
-        width="auto"
-        height="40px"
-      ></v-img> -->
-    </v-list-item> 
+    </v-list-item>
 
     <v-list rounded>
       <v-list-group
@@ -42,14 +25,14 @@
         <v-list-item
           v-for="child in item.items"
           :key="child.title"
-          class="menu-item-active" 
-         color="white"
+          class="menu-item-active"
+          color="white"
         >
           <router-link
             :to="child.route"
             style="text-decoration: none; color: inherit"
           >
-            <v-list-item-content  color="white"> 
+            <v-list-item-content color="white">
               <v-list-item-title v-text="child.title"></v-list-item-title>
             </v-list-item-content>
           </router-link>
@@ -59,6 +42,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex";
 export default {
   props: {
     drawerValue: Boolean,
@@ -69,60 +53,101 @@ export default {
         {
           icon: "fas fa-users",
           items: [
-            { title: "Users", route: "userList" },
-            { title: "White List Users", route: "whitelist_user" },
-             { title: "Role List", route: "role" }
-          ],                         
-          title: "Users",
+            { permissionName: "user_view", title: "User", route: "userList" },
+            {
+              permissionName: "white_list_user",
+              title: "White List Users",
+              route: "whitelist_user",
+            },
+            { permissionName: "role_view", title: "Role List", route: "role" },
+          ],
+          title: "User",
           route: "userList",
         },
         {
           icon: "fas fa-store-alt",
-          items: [{ title: "Canteens", route: "canteenList" }],
-          title: "Canteen",
+          items: [
+            {
+              permissionName: "canteen_view",
+              title: "Canteen Management",
+              route: "canteenList",
+            },
+          ],
+          title: "Canteen Management",
           route: "canteenList",
         },
         {
           icon: "fas fa-tram",
-          items: [{ title: "Machines", route: "machineList" }],
+          items: [
+            {
+              permissionName: "machine_view",
+              title: "Machine",
+              route: "machineList",
+            },
+          ],
           title: "Machine",
           route: "machineList",
         },
         {
           icon: "fas fa-store-alt",
-          items: [{ title: "Categories", route: "categoryList" }],
+          items: [
+            {
+              permissionName: "category_view",
+              title: "Category",
+              route: "categoryList",
+            },
+          ],
           title: "Category",
           route: "categoryList",
         },
         {
           icon: "fab fa-product-hunt",
           items: [
-            { title: "Products", route: "productList" },
-           { title: "Inventory List", route: "inventoryList" },
+            {
+              permissionName: "product_view",
+              title: "Product",
+              route: "productList",
+            },
+            {
+              permissionName: "inventory_view",
+              title: "Inventory",
+              route: "inventoryList",
+            },
+            {
+              permissionName: "wastage_view",
+              title: "Waste Management ",
+              route: "waste",
+            },
           ],
           title: "Product",
           route: "productList",
         },
         {
           icon: "fab fa-first-order",
-          items: [
-            { title: "Orders", route: "orderList" }, 
-          ],
+          items: [{ permissionName: "", title: "Order", route: "orderList" }],
           title: "Order",
           route: "orderList",
         },
         {
           icon: "fab fa-first-order",
           items: [
-            { title: "Page Builder", route: "cmsList" }, 
+            {
+              permissionName: "page_view",
+              title: "Page_Builder",
+              route: "cmsList",
+            },
           ],
-          title: "Page Builder",
+          title: "Page_Builder",
           route: "cmsList",
         },
         {
           icon: "fab fa-first-order",
           items: [
-            { title: "Banners", route: "bannerList" }, 
+            {
+              permissionName: "banner_view",
+              title: "Banner",
+              route: "bannerList",
+            },
           ],
           title: "Banner",
           route: "bannerList",
@@ -130,8 +155,8 @@ export default {
         {
           icon: "fab fa-first-order",
           items: [
-            { title: "Report", route: "reportList" }, 
-            { title: "Logs", route: "logList" }, 
+            { permissionName: "", title: "Report", route: "reportList" },
+            { permissionName: "", title: "Logs", route: "logList" },
           ],
           title: "Report",
           route: "reportList",
@@ -139,8 +164,16 @@ export default {
         {
           icon: "fab fa-product-hunt",
           items: [
-            { title: "Promotion", route: "promotionList" },
-            { title: "Discount", route: "discountList" }, 
+            {
+              permissionName: "promotion_view",
+              title: "Promotion",
+              route: "promotionList",
+            },
+            {
+              permissionName: "discount_view",
+              title: "Discount",
+              route: "discountList",
+            },
           ],
           title: "Promotion",
           route: "promotionList",
@@ -148,11 +181,35 @@ export default {
       ],
     };
   },
-     
+  computed: {
+    ...mapGetters(["userDetails"]),
+  },
+  mounted() {
+    if (this.userDetails) {
+      this.roleModel = this.userDetails;
+    }
+    this.items = this.items.filter((o1) =>
+      this.userDetails.permissions.permission_name.some((o2) =>
+        o2.includes(o1.title.toLowerCase())
+      )
+    );
+    var userPermission = this.userDetails.permissions;
+    this.items.forEach((obj, nd) => {
+      obj.items = obj.items.filter((o1) => {
+        return userPermission.permission_name.some((o2) =>
+          o2.includes(o1.permissionName.toLowerCase())
+        );
+      });
+      
+      this.items[nd].items = obj.items;
+    });
+
+    this.$router.push({ name: this.items[0].route });
+  },
 };
-</script> 
+</script>
 <style scoped>
-.v-list-item .router-link-active{
-color:white !important
+.v-list-item .router-link-active {
+  color: white !important;
 }
 </style>

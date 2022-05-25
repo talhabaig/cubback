@@ -12,7 +12,19 @@ import './mixins';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import './assets/fontawesome/css/all.css';
+import './assets/css/main.css';
+import './assets/css/dashbord.css';
+import './assets/css/bootstrap.css';
+import './assets/css/style.css'; 
 
+import VueQRCodeComponent from 'vue-qrcode-component'
+Vue.component('qr-code', VueQRCodeComponent) 
+import VueBlobJsonCsv from 'vue-blob-json-csv';
+
+Vue.use(VueBlobJsonCsv)
+
+
+// userManagmentDropDown
 
 
 Vue.config.productionTip = false

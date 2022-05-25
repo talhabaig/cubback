@@ -1,25 +1,60 @@
 <template>
   <div>
-    <form>
-      <v-row>
-        <v-col class="col-6">
-          <v-select
-            :items="getcanteenList"
-            item-value="_id"
-            item-text="canteen_name"
+    <v-row>
+      <v-col class="col-6">
+        <label class="regularFont login-font" style=""
+          >Select Canteen <small style="color: red">*</small></label
+        >
+        <div class="right-inner-addon input-container pb-0">
+          <i
+          ><img
+            src="../../assets/logos/bxs-down-arrow.svg"
+            height="7px"
+          /></i>
+          <select
             v-model="machineModel.canteen_id"
-            :error-messages="canteenErrors"
+            class="form-control login-field"
+          >
+            <option v-for="(d, i) in getcanteenList" :key="i" :value="d._id">
+              {{ d.canteen_name }}
+            </option>
+          </select>
+        </div>
+        <div class="invalid-feedback" v-if="$v.machineModel.canteen_id.$error">
+          <span v-if="$v.machineModel.canteen_id.$error"
+            >Canteen is required</span
+          >
+        </div>
+        <!-- <v-select
+            v-model="machineModel.canteen_id"
             label="Canteen"
             required
             color="blue darken-3"
-            @input="$v.machineModel.canteen_id.$touch()"
-            @blur="$v.machineModel.canteen_id.$touch()"
-          ><template v-slot:label>
-            <div>Canteen <small style="color: red">*</small></div>
-          </template></v-select>
-        </v-col>
-        <v-col class="col-6">
-          <v-text-field
+            ><template v-slot:label>
+              <div>Canteen <small style="color: red">*</small></div>
+            </template></v-select
+          > -->
+      </v-col>
+      <v-col class="col-6">
+        <label class="regularFont login-font" style=""
+          >Machine Name <small style="color: red">*</small></label
+        >
+        <div class="right-inner-addon input-container pb-0">
+          <input
+            v-model="machineModel.machine_name"
+            type="text"
+            class="form-control login-field"
+          />
+        </div>
+        <div
+          class="invalid-feedback"
+          v-if="$v.machineModel.machine_name.$error"
+        >
+          <span v-if="$v.machineModel.machine_name.$error"
+            >Name is required</span
+          >
+        </div>
+        <!-- <v-text-field
             v-model="machineModel.machine_name"
             :error-messages="machine_nameErrors"
             label="Name"
@@ -28,83 +63,88 @@
             @input="$v.machineModel.machine_name.$touch()"
             @blur="$v.machineModel.machine_name.$touch()"
           >
-          <template v-slot:label>
-            <div>Machine Name <small style="color: red">*</small></div>
-          </template>
-          </v-text-field>
-        </v-col>
-        <v-col class="col-6">
-          <v-text-field
-            v-model="machineModel.machine_code"
-            :error-messages="machine_codeErrors"
-            label="Machine_Code"
-            required
-            color="blue darken-3"
-            @input="$v.machineModel.machine_code.$touch()"
-            @blur="$v.machineModel.machine_code.$touch()"
-          >
-          <template v-slot:label>
-            <div>Machine Code <small style="color: red">*</small></div>
-          </template></v-text-field>
-        </v-col>
-        <v-col class="col-3">
-          <v-text-field
+            <template v-slot:label>
+              <div>Machine Name <small style="color: red">*</small></div>
+            </template>
+          </v-text-field> -->
+      </v-col>
+     
+      <v-col class="col-3">
+        <label class="regularFont login-font" style="">Row </label>
+        <div class="right-inner-addon input-container pb-0">
+          <input
+            v-model="Row"
+            label="Row"
+            type="number"
+            class="form-control login-field"
+          />
+        </div>
+        <!-- <v-text-field
             v-model="Row"
             label="Row"
             type="number"
             color="blue darken-3"
-          ></v-text-field>
-        </v-col>
-        <v-col class="col-3">
-          <v-text-field
+          ></v-text-field> -->
+      </v-col>
+      <v-col class="col-3">
+        <label class="regularFont login-font" style="">Column </label>
+        <div class="right-inner-addon input-container pb-0">
+          <input
             v-model="Column"
-            label="Column"
+            label="Row"
             type="number"
-            color="blue darken-3"
-          ></v-text-field>
-          <!-- <span><a @click="channel">View Machine</a> </span> -->
-        </v-col>
-        <v-col class="col-6">
-          <v-text-field
+            class="form-control login-field"
+          />
+        </div>
+        <!-- <span><a @click="channel">View Machine</a> </span> -->
+      </v-col>
+      <v-col class="col-6">
+        <label class="regularFont login-font" style="">Location </label>
+        <div class="right-inner-addon input-container pb-0">
+          <input
             v-model="machineModel.machine_location"
-            label="Location"
-            color="blue darken-3"
-          ></v-text-field>
-        </v-col>
-        <v-col class="col-6">
+            label="Row"
+            type="text"
+            class="form-control login-field"
+          />
+        </div>
+        <div
+          class="invalid-feedback"
+          v-if="$v.machineModel.machine_location.$error"
+        >
+          <span v-if="$v.machineModel.machine_location.$error"
+            >Code is required</span
+          >
+        </div>
+      </v-col>
+      <!-- <v-col class="col-6">
           <v-select
             :items="PaymentMothodList"
             v-model="machineModel.payment_method"
             label="Payment Method"
             color="blue darken-3"
           ></v-select>
-        </v-col>
-        <v-col class="col-6">
-          <strong>Status</strong>
-          <v-radio-group v-model="machineModel.machine_status" row>
-            <v-radio label="Active" value="active"></v-radio>
-            <v-radio label="InActive" value="inactive"></v-radio>
-          </v-radio-group>
-        </v-col>
-        <v-col class="col-12">
-          <v-btn
-            class="mr-4"
-            style="margin: 10px"
-            v-if="!isdisable"
-            dark
-            color="main_bg_color"
-            @click="submit"
-          >
-            submit
-          </v-btn>
-          <v-btn style="margin: 10px" v-if="!isdisable" @click="clear">
-            Close
-          </v-btn>
-        </v-col>
-      </v-row>
-    </form>
+        </v-col> -->
+      <v-col class="col-6">
+        <strong>Status</strong>
+        <v-radio-group v-model="machineModel.machine_status" row>
+          <v-radio label="Active" value="Active"></v-radio>
+          <v-radio label="InActive" value="InActive"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col class="col-12 d-flex justify-center">
+        <v-btn class="mr-4 modal-btn btnn" @click="clear"> Close </v-btn>
+
+        <v-btn class="modal-btn" dark color="main_bg_color" @click="submit">
+          Submit
+        </v-btn>
+      </v-col>
+    </v-row>
   </div>
 </template>
+
+
+
 <script>
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";
@@ -117,7 +157,7 @@ export default {
     machineModel: {
       machine_name: { required },
       canteen_id: { required },
-      machine_code: { required },
+      machine_location: { required },
       // voltage: { required },
       // temperature: { required },
       machine_status: { required },
@@ -132,14 +172,13 @@ export default {
     machineModel: {
       machine_name: "",
       canteen_id: "",
-      machine_code: "",
       Column: 7,
       Row: 5,
       machine_location: "",
-      payment_method: "Both",
+      payment_method: ["VIPPS", "Paypal"],
       // voltage: "",
       // temperature: "",
-      machine_status: "active",
+      machine_status: "Active",
     },
     PaymentMothodList: ["Both", "Vipps", "Debit/Credit"],
   }),
@@ -160,11 +199,11 @@ export default {
         errors.push("canteen is required.");
       return errors;
     },
-    machine_codeErrors() {
+    machine_locationErrors() {
       const errors = [];
-      if (!this.$v.machineModel.machine_code.$dirty) return errors;
-      !this.$v.machineModel.machine_code.required &&
-        errors.push("Machine_Code is required.");
+      if (!this.$v.machineModel.machine_location.$dirty) return errors;
+      !this.$v.machineModel.machine_location.required &&
+        errors.push("Machine_location is required.");
       return errors;
     },
     voltageErrors() {
@@ -201,13 +240,12 @@ export default {
     async submit() {
       this.$v.$touch();
       if (!this.$v.$invalid) {
-        this.machineModel.Row = this.Row;
-        this.machineModel.Column = this.Column;
+        this.machineModel.rows = parseInt(this.Row);
+        this.machineModel.columns = parseInt(this.Column);
         if (this.machineModel._id == null) {
           await this.$store
             .dispatch("addmachine", this.machineModel)
             .then((res) => {
-              debugger;
               if (res.success) {
                 Swal.fire({
                   title: "",
@@ -249,7 +287,6 @@ export default {
       this.$v.$reset();
       (this.machineModel = {
         machine_name: "",
-        machine_code: "",
       }),
         this.$emit("closeIt");
     },
@@ -274,5 +311,11 @@ export default {
 }
 #myTable {
   padding-left: 30%;
+}
+.right-inner-addon i {
+    position: absolute;
+    right: 0px;
+    padding: 8px 12px;
+    pointer-events: none;
 }
 </style>

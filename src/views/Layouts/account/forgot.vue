@@ -21,25 +21,14 @@
           @blur="$v.forgotForm.email.$touch()"
         ></v-text-field>
 
-        
         <v-btn block class="mt-4" color="main_bg_color" dark @click="submit">
           Continue
         </v-btn>
-      
       </form>
     </v-card-text>
     <v-divider></v-divider>
     <v-card-actions>
-      <v-btn
-        color="main_bg_color"
-        block
-        dark
-        class="pa-5"
-        @click="redirectToLogin()"
-      >
-       Login
-      </v-btn>
-        
+      <button data-v-575fd5b7="" type="button" class="mb-2 v-btn v-btn--block v-size--default "><span class="v-btn__content"  @click="redirectToLogin()" style="color:#8E8E8E"> Back to Login </span></button>
     </v-card-actions>
   </v-card>
 </template>
@@ -52,17 +41,17 @@ export default {
 
   validations: {
     forgotForm: {
-      email: { required, email }, 
+      email: { required, email },
     },
   },
 
-  data: () => ({ 
+  data: () => ({
     forgotForm: {
-      email: "", 
+      email: "",
     },
   }),
 
-  computed: { 
+  computed: {
     emailErrors() {
       const errors = [];
       if (!this.$v.forgotForm.email.$dirty) return errors;
@@ -74,35 +63,38 @@ export default {
 
   methods: {
     submit() {
-     
       this.$v.$touch();
-          if(!this.$v.$invalid){ 
-      this.$store.dispatch("forgotUser", this.forgotForm).then((response) => {
-       
-        if (response) {
-          Swal.fire({
-            title: "",
-            text: response.message,
-            icon: "success",
-          });
-        } else {
-          Swal.fire({
-            title: "Error!",
-            text: "SomeThing Went Wrong!",
-            icon: "error",
-          });
-        }
-        // this.clear();
+      if (!this.$v.$invalid) {
+        this.$store.dispatch("forgotUser", this.forgotForm).then((response) => {
+          if (response.error) {
+            Swal.fire({
+              title: "",
+              text: response.errors[0].msg,
+              icon: "error",
+            });
+          } else if (response) {
+            Swal.fire({
+              title: "",
+              text: response.message,
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: "SomeThing Went Wrong!",
+              icon: "error",
+            });
+          }
+          // this.clear();
 
-        // this.$router.push({ name: "userList" });
-      });
-    }},
- 
+          // this.$router.push({ name: "userList" });
+        });
+      }
+    },
+
     redirectToLogin() {
       this.$router.push({ name: "login" });
     },
-
-    
   },
 };
 </script>

@@ -9,7 +9,7 @@ export default {
   },
   getters: {
     // getinventoryList(state) {
-     
+
     //   return state.inventory;
     // },
     getinventoryById(state) {
@@ -17,80 +17,90 @@ export default {
     },
   },
   actions: {
-   
+
     async inventorysList({ commit }) {
-        return await axios
-              .get(`${process.env.VUE_APP_API_URL}api/v1/inventory`, {
-                headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-              })
-      .then( (response)=> { 
-         
-        if (response.data.success) {
-          commit("setinventoryList", response.data.inventory);
-        }
-      })
-      .catch(function (error) {
-        commit("setinventoryList",null);
-        console.log(error);
-      });
+      return await axios
+        .get(`${process.env.VUE_APP_API_URL}api/v1/inventory`, {
+          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+        })
+        .then((response) => {
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
+          if (response.data.success) {
+            commit("setinventoryList", response.data.inventory);
+          }
+        })
+        .catch(function (error) {
+          commit("setinventoryList", null);
+          if (error.response) {
+            return error.response.data
+          }
+        });
     },
 
     async getinventoryById({ commit }, data) {
-     
+
       commit("setSingleinventory", data);
     },
 
     async addinventory({ commit }, payload) {
-            
+
       await axios.post(`${process.env.VUE_APP_API_URL}api/v1/inventory`,
-          payload,         
-          {
-            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-          }
-        )
-        .then((response)=> {
-         
+        payload,
+        {
+          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+        }
+      )
+        .then((response) => {
+
           if (response.status) {
             commit("setinventory", payload.data);
           }
         })
-        .catch(  (error)=>  {
-          console.log(error);
+        .catch((error) => {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
     async updateinventory({ commit }, payload) {
       return await axios
-      .put(
-        `${process.env.VUE_APP_API_URL}api/v1/inventory/${payload._id}`,
-        {
-          name: payload.name,
-          location: payload.location, 
-          status: payload.status, 
-        },
+        .put(
+          `${process.env.VUE_APP_API_URL}api/v1/inventory/${payload._id}`,
+          {
+            name: payload.name,
+            location: payload.location,
+            status: payload.status,
+          },
           {
             headers: { Authorization: `Bearer ${JwtService.getToken()}` },
           }
         )
         .then(function (response) {
-          return response ;
+          return response;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
     async removeinventory({ commit }, inventoryId) {
-     
+
       return await axios.delete(`${process.env.VUE_APP_API_URL}api/v1/inventory/${inventoryId}`, {
         headers: { Authorization: `Bearer ${JwtService.getToken()}` },
       })
-      .then(function (response) {
-        return response.data;
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+        .then(function (response) {
+          return response.data;
+        })
+        .catch(function (error) {
+          if (error.response) {
+            return error.response.data
+          }
+        });
     },
 
     resetinventoryState({ commit }) {
@@ -105,7 +115,7 @@ export default {
       state.inventory.unshift(payload);
     },
     setinventoryList(state, payload) {
-     
+
       state.inventory = payload;
     },
     setSingleinventory(state, payload) {
