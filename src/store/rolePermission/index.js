@@ -3,7 +3,7 @@ const axios = require("axios");
 
 export default {
   state: {
-    permissions: null,
+    singlePermission: null,
   },
   getters: {
     getPermission(state) {
@@ -17,79 +17,40 @@ export default {
           headers: { Authorization: `Bearer ${JwtService.getToken()}` },
         })
         .then(function (response) {
-          console.log(response);
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
           if (response.status == 200) {
-            console.log(response.data.data);
             commit("setPermissions", response.data.data);
           }
         })
         .catch(function (error) {
           commit("setPermissions", null);
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         })
-        .then(function () {
-          // always executed
-        });
     },
 
-    // async getRolebyId({ commit }, data) {
-    //   commit("setSingleRole", data);
-    // },
+    async getPermissionById({ commit }, data) {
+      commit("setSinglePermission", data);
+    },
+    async getRolebyId({ commit }, data) {
+      commit("setSingleRole", data);
+    },
 
-    // async addRole({ commit }, payload) {
-    //  
-    //   return await axios
-    //     .post(`${process.env.VUE_APP_API_URL}api/User/AddUser`, payload)
-    //     .then(function (response) {
-    //       console.log(response);
-    //       if (response.status) {
-    //         commit("setUsers", payload.data.data);
-    //       }
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // },
-
-    // async updateRole({ commit }, payload) {
-    //  
-
-    //   return await axios
-    //     .put(`${process.env.VUE_APP_API_URL}api/User/UpdateUser`, payload, {
-    //       headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-    //     })
-    //     .then(function (response) {
-    //       console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // },
-
-    // async removeRole({ commit }, userId) {
-    //   return await axios
-    //     .post(
-    //       `${process.env.VUE_APP_API_URL}api/User/RemoveUser?Id=${userId}`,
-    //       {},
-    //       {
-    //         headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-    //       }
-    //     )
-    //     .then(function (response) {
-    //       console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // },
-
-    // resetUserState({ commit }) {
-    //   commit("setSingleRole", null);
-    // },
   },
   mutations: {
     setPermissions(state, payload) {
       state.permissions = payload;
     },
+
+
+    setSinglePermission(state, payload) {
+      state.singlePermission = payload;
+    },
+
+
+
   },
 };

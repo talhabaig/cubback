@@ -19,10 +19,20 @@
     <v-card-text class="login-card">
       <v-card-text>
         <div class="mb-5" style="color: #f19b28">
-          <h4 class="text-center login-font" style="font-weight: bold;font-size:50px">WELCOME</h4>
+          <h4
+            class="text-center login-font"
+            style="font-weight: bold; font-size: 40px"
+          >
+            <strong>WELCOME </strong>
+          </h4>
         </div>
         <div>
-          <h5 class="text-center regularFont login-font" style="font-size:30px;">Login to your Account</h5>
+          <h5
+            class="text-center regularFont login-font"
+            style="font-size: 20px"
+          >
+            Login to your Account
+          </h5>
         </div>
       </v-card-text>
       <v-card-text>
@@ -38,9 +48,12 @@
             <input
               v-model="loginForm.user_email"
               type="text"
-              class="form-control login-field "
+              class="form-control login-field"
               placeholder="info@friggkantine.com"
             />
+          </div>
+          <div class="invalid-feedback" v-if="$v.loginForm.user_email.$error">
+            <span v-if="$v.loginForm.user_email.$error">Email is in-valid</span>
           </div>
           <!-- <v-text-field
             v-model="loginForm.user_email"
@@ -62,19 +75,26 @@
           <h5 class="regularFont login-font">Password</h5>
 
           <div class="right-inner-addon input-container">
-            <i  @click="showPassword = !showPassword"
+            <!-- <i  @click="showPassword = !showPassword"
               ><img @click="showPassword = !showPassword"
-                src="../../assets/logos/Icon ionic-md-eye-off.png"
+                src="../../assets/logos/Icon-ionic-md-eye-off.png"
                 height="18px"
-            /></i>
+            /></i> -->
 
             <input
               v-model="loginForm.user_password"
               class="form-control login-field"
               :type="showPassword ? 'text' : 'password'"
               placeholder="Password"
-              
             />
+          </div>
+          <div
+            class="invalid-feedback"
+            v-if="$v.loginForm.user_password.$error"
+          >
+            <span v-if="$v.loginForm.user_password.$error"
+              >Password is required</span
+            >
           </div>
           <!-- <v-text-field
             v-model="loginForm.user_password"
@@ -97,6 +117,7 @@
   </v-card>
 </template>
 <script>
+import { mapGetters } from "vuex";
 import { validationMixin } from "vuelidate";
 import { required, maxLength, email } from "vuelidate/lib/validators";
 import Swal from "sweetalert2";
@@ -120,6 +141,7 @@ export default {
   }),
 
   computed: {
+    ...mapGetters(["getRoutes"]),
     user_passwordErrors() {
       const errors = [];
       if (!this.$v.loginForm.user_password.$dirty) return errors;
@@ -139,11 +161,15 @@ export default {
   },
 
   methods: {
+    sPassword() {
+      this.showPassword = true;
+    },
     submit() {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         this.$store.dispatch("signInUser", this.loginForm).then((response) => {
-          if (response.success) {
+          if (response.data.success) {
+            var routes = this.getRoutes;
             this.$router.push({ name: "userList" });
           } else {
             Swal.fire({
@@ -180,16 +206,16 @@ export default {
   border-top-right-radius: 34px;
   background-color: #fff;
 }
-.login-field { 
-    border-radius: 10px;
-  background-color:#ECF5F7;
+.login-field {
+  border-radius: 10px;
+  background-color: #ecf5f7;
   border-block: initial;
 }
 .login-font {
-  font-family:'Bebas Neue Pro'
+  font-family: "Bebas Neue Pro";
 }
 .regularFont {
-  font-weight: "regular"; 
+  font-weight: "regular";
 }
 .bg-img {
   background-image: url(../../assets/logos/bgcopy.jpg) !important;
@@ -210,13 +236,12 @@ export default {
   right: 0px;
   padding: 12px 12px;
   pointer-events: none;
-} 
+}
 
 input {
   width: 100%;
   padding: 10px !important;
   margin: 0em !important;
   box-sizing: border-box;
-
 }
 </style>

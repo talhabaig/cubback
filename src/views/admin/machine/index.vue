@@ -1,105 +1,242 @@
 <template>
   <div>
-    <v-card class="d-flex justify-space-around align-center mb-10">
+    <div class="d-flex justify-space-around align-center mb-2 mt-3">
       <v-card-text>
-        <p class="text-h4 text--primary mb-0">
-          <i class="fas fa-stream Orders mr-2 main_color"></i>
-          Machine
-        </p>
+        <div class="pageHeadingIcon">
+          <div class="pageName">
+            <svg class="pageNameSvg userManagmentIcon">
+              <use xlink:href="#machineWhite"></use>
+            </svg>
+          </div>
+          <h2>Machine Management</h2>
+        </div>
       </v-card-text>
-      <v-card-actions class="pa-5">
-        <v-btn dark color="main_bg_color" @click="addmachine">
-          <i class="fas fa-plus mr-2"></i>Add Machine</v-btn
-        >
-      </v-card-actions>
-    </v-card>
-    <b-modal
-      size="xl"
-      id="createMachine"
-      hide-footer
-      centered
-      style="height: 500px"
-      no-close-on-backdrop
-    >
-      <template color="main_bg_color" dark class="mb-2" slot="modal-title">
-        <span v-if="isEdit == false"
-          ><i class="fas fa-stream Orders mr-2"></i>Add Machine</span
-        >
-        <span v-else
-          ><i class="fas fa-stream Orders mr-2"></i>View Machine</span
-        >
-      </template>
-      <addMachine @closeIt="closeModel"></addMachine>
-    </b-modal>
-    <b-modal
-      size="xl"
-      id="updateMachine"
-      hide-footer
-      centered
-      style="height: 500px"
-      no-close-on-backdrop
-    >
-      <template color="main_bg_color" dark class="mb-2" slot="modal-title">
-        <span v-if="isEdit == false"
-          ><i class="fas fa-stream Orders mr-2"></i>Add Machine</span
-        >
-        <span v-else
-          ><i class="fas fa-stream Orders mr-2"></i>View Machine</span
-        >
-      </template>
-      <updateMachine @closeIt="closeModel"></updateMachine>
-    </b-modal>
 
-    <v-card>
-      <v-card-title>
-        Machine List
-        <v-spacer></v-spacer>
+      <div class="right-inner-addon2 input-container pb-0">
+        <i
+          ><img
+            src="../../../assets/logos/Icon ionic-ios-search.svg"
+            height="15px"
+        /></i>
 
-        <v-select
-          :items="getcanteenList"
-          v-if="getcanteenList"
-          item-value="_id"
-          item-text="canteen_name"
-          v-model="canteenId"
-          @change="getcanteenmachine"
-          :clearable="true"
-          label="Canteen"
-          color="blue darken-3"
-        ></v-select>
-        <v-spacer></v-spacer>
-        <v-text-field
+        <input
+          class="left normal border-radius bg-clr mt-1 searchfield"
+          type="text"
+          placeholder="Search by Machine..."
           v-model="search"
-          append-icon="mdi-magnify"
-          color="blue darken-3"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-data-table :headers="headers" :items="items" :search="search">
-        <!-- @click="" -->
+        />
+      </div>
+
+      <v-card-actions class="pa-5">
+        <v-dialog
+          v-model="dialog"
+          transition="dialog-top-transition"
+          scrollable
+          width="1024px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-if="hasPermission('user_create')"
+              dark
+              color="main_bg_color"
+              v-bind="attrs"
+              v-on="on"
+              ><i class="mr-2" style="margin-top: -3px"
+                ><svg class="pageNameSvg userManagmentIcon">
+                  <use xlink:href="#machineWhite"></use></svg></i
+              >Add Machine</v-btn
+            >
+          </template>
+          <template v-if="dialog" v-slot:default="dialog">
+            <v-card>
+              <v-toolbar
+                class="mb-2 text-center justify-center b-border m-2"
+                style="box-shadow: none"
+              >
+                <span
+                  v-if="isEdit == false"
+                  class="text-center justify-center"
+                  style="font-size: 26px !important"
+                  >Add Machine
+                </span>
+                <span v-else>Edit Machine</span>
+                <span @click="closeModel" class="crossPossition">
+                  <img src="../../../assets/logos/Icon metro-cross.svg" />
+                </span>
+              </v-toolbar>
+              <v-card-text v-if="isEdit == false">
+                <addMachine @closeIt="closeModel"></addMachine>
+                <!-- <addCanteen @closeIt="closeModel" :isEdit='isEdit'></addCanteen> -->
+              </v-card-text>
+              <v-card-text v-else>
+                <addMachine @closeIt="closeModel"></addMachine>
+                <!-- <editUser @closeIt="closeModel"></editUser> -->
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-dialog>
+      </v-card-actions>
+    </div>
+    <div class="tableWrapper">
+      <table class="row mx-0" id="myTable">
+        <thead class="px-0">
+          <tr class="tableHead">
+            <th class="name" style="width: 30%">Name</th>
+            <th class="name" style="width: 30%">Temperature</th>
+            <th class="status" style="width: 20%">Status</th>
+            <th class="action" style="width: 20%">Action</th>
+          </tr>
+        </thead>
+        <tbody class="px-0">
+          <tr
+            v-for="(data, index) in items"
+            :key="index"
+            class="px-0 tabledata"
+          >
+            <td class="namedata" style="width: 30%">{{ data.machine_name }}</td>
+            <td class="namedata" style="width: 30%">
+              {{ data.machine_temperature }}
+            </td>
+            <td class="statusdata" style="width: 20%">
+              <button
+                :class="
+                  data.machine_status == 'Active'
+                    ? 'btnActive green'
+                    : 'btnActive grey'
+                "
+              >
+                {{ data.machine_status == "Active" ? "Active" : "DeActive" }}
+              </button>
+            </td>
+            <td class="actiondata actionIcons" style="width: 20%">
+              <a @click="editItem(data)" class="actionIcon">
+                <svg class="svgIcon">
+                  <use xlink:href="#editIcon"></use>
+                </svg>
+              </a>
+              <a @click="viewItem(data)" class="actionIcon">
+                <svg class="svgIcon">
+                  <use xlink:href="#openeyeIcon"></use>
+                </svg>
+              </a>
+              <a @click="warningModel(data._id)" class="actionIcon">
+                <svg class="svgIcon">
+                  <use xlink:href="#deleteIcon"></use>
+                </svg>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagiNationWrapper">
+      <p v-if="getmachineList">
+        Showing {{ currentPage }}-{{ getmachineList.length }} of
+        {{ getmachineListTotal }} results
+      </p>
+      <p v-else>Showing 0-0 of0 results</p>
+      <ul class="pagiNation">
+        <li @click="updateCurrentPage(currentPage - 1)" class="pagiNation-item">
+          <a class="page-link">
+            <svg class="svgIconLeft">
+              <use xlink:href="#leftIcon"></use>
+            </svg>
+          </a>
+        </li>
+        <li @click="updateCurrentPage(currentPage)" class="pagiNation-item">
+          <span class="page-link activepage"> {{ currentPage }}</span>
+        </li>
+        <li @click="updateCurrentPage(currentPage + 1)" class="pagiNation-item">
+          <span class="page-link"> {{ currentPage + 1 }}</span>
+        </li>
+        <li @click="updateCurrentPage(currentPage + 2)" class="pagiNation-item">
+          <span class="page-link"> {{ currentPage + 2 }}</span>
+        </li>
+        <li @click="updateCurrentPage(currentPage + 1)" class="pagiNation-item">
+          <a class="page-link">
+            <svg class="svgIconNext">
+              <use xlink:href="#rightIcon"></use>
+            </svg>
+          </a>
+        </li>
+      </ul>
+      <!-- <ul class="pagiNation">
+        <li class="pagiNation-item">
+          <a class="pageLinkNext Next" href="#">
+            <svg class="svgIconLeft">
+              <use xlink:href="#leftIcon"></use>
+            </svg>
+          </a>
+        </li>
+        <li class="pagiNation-item"><span class="page-link"> 1</span></li>
+        <li class="pagiNation-item"><span class="page-link"> 2</span></li>
+        <li class="pagiNation-item"><span class="page-link"> 3</span></li>
+        <li class="pagiNation-item">
+          <a class="pageLinkBefore Before" href="#">
+            <svg class="svgIconNext">
+              <use xlink:href="#rightIcon"></use>
+            </svg>
+          </a>
+        </li>
+      </ul> -->
+    </div>
+    <!-- <v-card v-if="hasPermission('user_view')">
+
+      <v-data-table :headers="fields" :items="items" :search="search">
+        <template v-slot:[`item.image`]="{ item }">
+          <v-avatar v-if="item.image == null || item.image == ''" class="pa-7">
+            <img
+              src="https://cdn.vuetifyjs.com/images/john.jpg"
+              alt="Symphony"
+            />
+          </v-avatar>
+          <v-avatar v-else>
+            <img :src="item.image" :alt="item.firstName + item.lastName" />
+          </v-avatar>
+          {{ item.image }}
+        </template>
+
+        <template v-slot:[`item.user_role_id`]="{ item }">
+          {{ roleName(item.user_role_id) }}
+        </template>
+        <template v-slot:[`item.IsApproved`]="{ item }">
+          <v-select
+            :color="getColor(item.isActive)"
+            :items="isApprovedOptions"
+            item-text="text"
+            item-value="value"
+            v-model="item.isActive"
+          ></v-select>
+        </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon class="mr-2 edit_btn" @click="editItem(item)">
+          <v-icon
+            v-if="hasPermission('user_edit')"
+            class="mr-2 edit_btn"
+            @click.stop="editItem(item)"
+          >
             mdi-pencil
           </v-icon>
-          <v-icon class="mr-2 edit_btn" @click="viewItem(item)">
-            mdi-eye
-          </v-icon>
-          <v-icon @click="warningModel(item._id)" class="del_btn">
+          <v-icon
+            v-if="hasPermission('user_delete')"
+            @click="warningModel(item._id)"
+            class="del_btn"
+          >
             mdi-delete
           </v-icon>
         </template>
       </v-data-table>
-    </v-card>
-    <template>
+    </v-card> -->
+    <!-- <template>
       <v-dialog v-model="delDialog" max-width="400">
         <v-card>
-          <v-card-title class="text-h5 orange lighten-1 text-white">
+          <v-card-title class="text-h5 align-center orange lighten-1 text-white">
             Warning
           </v-card-title>
+
           <v-card-text class="pt-10 text-h6">
-            Do you want to delete entry?
+           <p> Do you want to delete this User? </p>
           </v-card-text>
+
           <v-card-actions>
             <v-spacer></v-spacer>
 
@@ -113,26 +250,66 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-    </template>
+    </template> -->
+
+    <v-card-actions class="pa-5">
+      <v-dialog
+        v-model="delDialog"
+        transition="dialog-top-transition"
+        scrollable
+      >
+        <template v-if="delDialog" v-slot:default="delDialog">
+          <v-card>
+            <v-toolbar
+              class="mb-2 text-center justify-center b-border m-2"
+              style="box-shadow: none"
+            >
+              <span>Warning</span>
+              <span @click="closeModel" class="crossPossition">
+                <img src="../../../assets/logos/Icon metro-cross.svg" />
+              </span>
+            </v-toolbar>
+
+            <v-card-text class="pt-10 text-h6">
+              Do you want to delete this Machine?
+
+              <v-col class="col-12 d-flex justify-space-around">
+                <v-btn
+                  class="mr-4 modal-btn"
+                  dark
+                  color="main_bg_color"
+                  @click="deleteItem"
+                >
+                  Yes
+                </v-btn>
+                <v-btn class="modal-btn" @click="closeWarningModel"> No </v-btn>
+              </v-col>
+            </v-card-text>
+          </v-card>
+        </template>
+      </v-dialog>
+    </v-card-actions>
   </div>
 </template>
 <script>
 import addMachine from "../../../components/machine/addMachine.vue";
-import updateMachine from "../../../components/machine/updateMachine.vue";
 import { mapGetters } from "vuex";
 import Swal from "sweetalert2";
 export default {
   components: {
     addMachine,
-    updateMachine,
   },
   data() {
     return {
+      currentPage: 1,
+      deletedialog: false,
       canteenId: "",
+      machinename: false,
       isEdit: false,
       dialog: false,
       delDialog: false,
       allowDel: false,
+      permissions: [],
       itemId: "",
       isfetching: false,
       search: "",
@@ -142,12 +319,6 @@ export default {
           align: "start",
           sortable: true,
           value: "machine_name",
-        },
-        {
-          text: "Machine Code",
-          align: "start",
-          sortable: true,
-          value: "machine_code",
         },
         {
           text: " Status",
@@ -164,67 +335,94 @@ export default {
       items: [],
     };
   },
+
+  watch: {
+    currentPage: {
+      handler: function () {
+        this.fetchData();
+      },
+    },
+    getmachineList: {
+      handler: function () {
+        this.items = this.getmachineList;
+      },
+    },
+    search: {
+      handler: function () {
+        this.items = this.getmachineList.filter((x) => {
+          return x.machine_name.includes(this.search);
+        });
+      },
+    },
+  },
   methods: {
+    hasPermission(obj) {
+      // if (
+      //   this.userDetails &&
+      //   this.userDetails.user &&
+      //   this.userDetails.user.user_role == "super_admin"
+      // ) {
+      return true;
+      // } else {
+      //
+      //   return this.userDetails.permissions.permission_name.includes(obj);
+      // }
+    },
     addmachine() {
       this.$bvModal.show("createMachine");
     },
-    async getcanteenmachine(obj) { 
+    async getcanteenmachine(obj) {
       if (obj) {
-        await this.$store.dispatch("machinesList", obj)
+        await this.$store
+          .dispatch("machinesList", obj)
           .then((response) => {
-            console.log(response);
             this.isfetching = false;
             this.items = this.getmachineList;
           })
           .catch((ex) => {
             this.isfetching = false;
-            console.log(ex);
           });
       } else {
         await this.fetchData();
         await this.$store.dispatch("getcanteenById", null);
       }
     },
+    updateCurrentPage(obj) {
+      if (obj >= 1) {
+        this.currentPage = obj;
+      }
+    },
     async fetchData() {
       this.isfetching = true;
-      await this.$store.dispatch("getcanteensList");
-      await this.$store.dispatch("productsList");
-      await this.$store
-        .dispatch("machinesList")
-        .then((response) => {
-          console.log(response);
-          this.isfetching = false;
-          this.items = this.getmachineList;
-        })
-        .catch((ex) => {
-          this.isfetching = false;
-          console.log(ex);
-        });
+      await this.$store.dispatch("getcanteensList", { pagination: true });
+      await this.$store.dispatch("productsList", { pagination: true });
+      await this.$store.dispatch("machinesList", {
+        resultPerPage: 10,
+        currentPage: this.currentPage,
+      });
     },
 
     async viewItem(obj) {
-      debugger;
-    await this.$store.dispatch("getmachinechannels", obj._id).then((r) => {
-        this.$bvModal.show("updateMachine");
+      this.machinename = obj.machine_name;
+      console.log("objjjjj", obj.canteen_id.canteen_name);
+      await this.$store.dispatch("getmachinechannels", {
+        _id: obj._id,
+        canteen_name: obj.canteen_id.canteen_name,
       });
+      this.$router.push({ name: "channelView" });
     },
     async editItem(obj) {
-        await this.$store.dispatch("getmachineById", obj).then((r) => {
-        debugger;
-        this.$bvModal.show("createMachine");
-      });
-
-      
+      await this.$store.dispatch("getmachineById", obj);
+      (this.isEdit = true), (this.dialog = true);
     },
 
     closeModel() {
       this.fetchData();
-      this.$bvModal.hide("createMachine");
-      this.$bvModal.hide("updateMachine");
+      this.dialog = false;
+      this.delDialog = false;
     },
 
     warningModel(id) {
-      console.log(id);
       this.delDialog = true;
       this.itemId = id;
     },
@@ -234,26 +432,27 @@ export default {
       this.itemId = "";
     },
 
-  async  deleteItem() {
-    await  this.$store.dispatch("removemachine", this.itemId).then((response) => {
-         Swal.fire({
-                title: "",
-                text: response.data.message,
-                icon: "success",
-              });
-      });
+    async deleteItem() {
+      await this.$store
+        .dispatch("removemachine", this.itemId)
+        .then((response) => {
+          Swal.fire({
+            title: "",
+            text: response.data.message,
+            icon: "success",
+          });
+        });
       this.delDialog = false;
       this.itemId = "";
 
-      this.fetchData().catch((error) => {
-        console.error(error);
-      });
+      this.fetchData();
     },
   },
   destroyed() {
     this.$store.dispatch("resetmachineListState");
   },
   mounted() {
+    this.permissions = this.userDetails.permissions;
     if (this.getcanteenById) {
       this.canteenId = this.getcanteenById._id;
       this.getcanteenmachine(this.canteenId);
@@ -262,7 +461,34 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getmachineList", "getcanteenList", "getcanteenById"]),
+    ...mapGetters([
+      "getmachineList",
+      "getmachineListTotal",
+      "getcanteenListActive",
+      "userDetails",
+      "getcanteenById",
+    ]),
   },
 };
 </script>
+
+<style scoped>
+.bg-clr {
+  background-color: #ecf5f7;
+}
+.v-input__slot:before {
+  border: none;
+}
+.v-card__actions > .v-btn.v-btn {
+  padding: 0 20px;
+}
+.theme--light.v-data-table thead {
+  background-color: #747474 !important;
+}
+.b-border {
+  border-bottom: 1px solid #f8932d;
+}
+</style>
+
+
+   

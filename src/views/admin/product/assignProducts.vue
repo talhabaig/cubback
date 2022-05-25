@@ -144,7 +144,7 @@ export default {
     async fetchData() {
       
       await this.$store.dispatch("machinesList");
-      await this.$store.dispatch("productsList");
+      await this.$store.dispatch("productsList",{pagination:true});
     },
 
     editItem(obj) {
@@ -159,9 +159,7 @@ export default {
       this.isEdit = false;
     },
 
-    warningModel(id) {
-     
-      console.log(id);
+    warningModel(id) { 
       this.delDialog = true;
       this.itemId = id;
     },
@@ -183,9 +181,7 @@ export default {
       this.delDialog = false;
       this.itemId = "";
 
-      this.fetchData().catch((error) => {
-        console.error(error);
-      });
+      this.fetchData() 
     },
   },
   destroyed() {

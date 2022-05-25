@@ -2,10 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from 'vuex-persistedstate';
 import users from "./user";
-import account from "./account";
-import orderType from "./orderType";
-import order from "./order";
-import patient from "./patient";
+import account from "./account"; 
+import order from "./order"; 
 import role from "./role";
 import canteen from "./canteen";
 import machine from "./machine";
@@ -17,16 +15,16 @@ import discount from "./discount";
 import rolePermission from "./rolePermission";
 import banner from "./banner";
 import cms from "./cms";
+import waste from './waste' 
+
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     users,
-    account,
-    orderType,
-    order,
-    patient,
+    account, 
+    order, 
     role,
     canteen,
     machine,
@@ -37,7 +35,8 @@ export default new Vuex.Store({
     banner,
     promotion,
     discount,
-    cms
+    cms,
+    waste
   },
   plugins: [createPersistedState("account")],
 });

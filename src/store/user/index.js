@@ -4,19 +4,52 @@ const axios = require("axios");
 export default {
   state: {
     users: [],
+    usersTotal: 0,
+    foodSupplier: [],
+    canteenAdmin: [],
+    machineFiller: [],
     roles: [],
+    whitelist: [],
     permissions: [],
     singleUser: null,
     singleRole: null,
+    totalRecordWhiteList: 0,
+    singlePermission: null,
   },
   getters: {
     getuserList(state) {
       return state.users;
     },
-    getroleList(state) { 
+    getuserListTotal(state) {
+      return state.usersTotal;
+    },
+    getwhiteList(state) {
+      return state.whitelist;
+    },
+    getfoodSupplierList(state) {
+      return state.foodSupplier;
+    },
+    getmachinefillerList(state) {
+      return state.machineFiller;
+    },
+    getcanteenAdminList(state) {
+      return state.canteenAdmin;
+    },
+    gettotalRecordWhiteList(state) {
+      return state.totalRecordWhiteList;
+    },
+    getroleList(state) {
       return state.roles;
     },
-    getpermissionList(state) { 
+    getroleListTotal(state) {
+      return state.rolesTotal;
+    },
+    getActiveroleList(state) {
+      return state.roles.filter((x) => {
+        return x.role_status == "Active";
+      });;
+    },
+    permissionList(state) {
       return state.permissions;
     },
     getUserById(state) {
@@ -25,54 +58,239 @@ export default {
     getRoleById(state) {
       return state.singleRole;
     },
+    getPermissionById(state) {
+      return state.singlePermission;
+    },
   },
   actions: {
-    async getUserList({ commit }) { 
+    async  bulkwhiteuser({ commit }, payload) {
       return await axios
-        .get(`${process.env.VUE_APP_API_URL}api/v1/users`, {
+        .post(`${process.env.VUE_APP_API_URL}api/v1/white_list/bulk_user`, payload, {
           headers: { Authorization: `Bearer ${JwtService.getToken()}` },
         })
-        .then(function (response) { 
-          console.log(response);
-          if (response.status) {
-            commit("setUserList", response.data.allUser);
-          }
+        .then((response) => {
+          return response
+
         })
-        .catch(function (error) { 
-          commit("setUserList", null);
-          console.log(error);
+        .catch((error) => {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
-    async getRoleList({ commit }) { 
+    async  bulkUser({ commit }, payload) {
       return await axios
-        .get(`${process.env.VUE_APP_API_URL}api/v1/roles`, {
+        .post(`${process.env.VUE_APP_API_URL}api/v1/users/bulk`, payload, {
           headers: { Authorization: `Bearer ${JwtService.getToken()}` },
         })
-        .then(function (response) {  
-          if (response.status) {
-            commit("setRoleList", response.data.Data);
+        .then((response) => {
+          return response.data
+
+        })
+        .catch((error) => {
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async getUserList({ commit }, payload) {
+      if (payload.pagination) {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/users?pagination=false`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then(function (response) {
+
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.status) {
+              commit("setUserList", response.data.allUser);
+              commit("setUserListTotal", response.data.totalRecord);
+            }
+          })
+          .catch(function (error) {
+
+            commit("setUserList", null);
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      }
+      else {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/users?resultPerPage=${payload.resultPerPage}&currentPage=${payload.currentPage}&pagination=true`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then(function (response) { 
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.data.success) {
+              commit("setUserList", response.data.allUser);
+              commit("setUserListTotal", response.data.totalRecord);
+            }
+          })
+          .catch(function (error) {
+
+            commit("setUserList", null);
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      }
+
+    },
+
+    async getWhiteListUserList({ commit }, payload) {
+      if (payload.pagination) {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/white_list?pagination=false`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then(function (response) {
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.data.success) {
+              commit("setwhiteUserList", response.data.data);
+              commit("setwhiteUserTotal", response.data.totalRecord);
+            }
+            return response.data.data
+          })
+          .catch(function (error) {
+            commit("setwhiteUserList", null);
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      }
+      else {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/white_list?resultPerPage=${payload.resultPerPage}&currentPage=${payload.currentPage}&pagination=true`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then(function (response) {
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.data.success) {
+              commit("setwhiteUserList", response.data.data);
+              commit("setwhiteUserTotal", response.data.totalRecord);
+            }
+            return response.data.data
+          })
+          .catch(function (error) {
+            commit("setwhiteUserList", null);
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      }
+
+    },
+    async getmachineFillerList({ commit }) {
+      return await axios
+        .get(`${process.env.VUE_APP_API_URL}api/v1/users/machine_filler`, {
+          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+        })
+        .then(function (response) {
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
+          if (response.data.success) {
+            commit("setmachineFiller", response.data.data);
+          }
+          return response.data.data
+        })
+        .catch(function (error) {
+          commit("setmachineFiller", null);
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async getRoleList({ commit }, payload) {
+      if (payload.pagination) {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/role_permissions?pagination=false`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then(function (response) {
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.data.success) {
+              commit("setRoleList", response.data.Data);
+              commit("setRoleListTotal", response.data.totalRecord);
+            }
+            return response.data
+          })
+          .catch(function (error) {
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      }
+      else {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/role_permissions?resultPerPage=${payload.resultPerPage}&currentPage=${payload.currentPage}&pagination=true`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then(function (response) {
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.data.success) {
+              commit("setRoleList", response.data.Data);
+              commit("setRoleListTotal", response.data.totalRecord);
+            }
+            return response.data
+          })
+          .catch(function (error) {
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      }
+
+    },
+    async getPermissionList({ commit }) {
+      return await axios
+        .post(`${process.env.VUE_APP_API_URL}api/v1/permissions/`, {}, {
+          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+        })
+        .then(async (response) => {
+
+          if (response.data.success) {
+            commit("setPermissionList", response.data.permissions.permissions);
+          }
+          else if (!response.data.success) {
+            await axios
+              .get(`${process.env.VUE_APP_API_URL}api/v1/permissions/`, {
+                headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+              })
+              .then(function (response) {
+
+                if (response.data.message == 'jwt malformed') {
+                  window.location.href = '/login'
+                }
+                if (response.data.success) {
+                  commit("setPermissionList", response.data.Data[0].permissions);
+                }
+              })
+              .catch(function (error) {
+                if (error.response) {
+                  return error.response.data
+                }
+              });
           }
           return response.data
         })
         .catch(function (error) {
-          // handle error
-          console.log(error);
-        });
-    },
-    async getPermissionList({ commit }) { 
-      return await axios
-        .get(`${process.env.VUE_APP_API_URL}api/v1/permissions`, {
-          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-        })
-        .then(function (response) {  
-          if (response.status) {
-            commit("setPermissionList", response.data.Data);
+          if (error.response) {
+            return error.response.data
           }
-          return response.data
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
         });
     },
 
@@ -82,46 +300,81 @@ export default {
     async getRoleById({ commit }, data) {
       commit("setSingleRole", data);
     },
+    async getPermissionById({ commit }, data) {
+      commit("setSinglePermission", data);
+    },
 
     async addUser({ commit }, payload) {
-     
+
       return await axios
         .post(`${process.env.VUE_APP_API_URL}api/v1/users/`, payload,
-        {
-          headers: { Authorization: `Bearer ${JwtService.getToken()}`},
-        })
+          {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
         .then(function (response) {
           return response.data;
         })
         .catch(function (error) {
-         
-          return error;
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
-    async addRole({ commit }, payload) { 
+    async addWhiteUser({ commit }, payload) {
+
       return await axios
-        .post(`${process.env.VUE_APP_API_URL}api/v1/roles/`, payload,
-        {
-          headers: { Authorization: `Bearer ${JwtService.getToken()}`},
-        })
+        .post(`${process.env.VUE_APP_API_URL}api/v1/white_list/`, payload,
+          {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
         .then(function (response) {
           return response.data;
         })
         .catch(function (error) {
-         
-          return error;
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async addRole({ commit }, payload) {
+      return await axios
+        .post(`${process.env.VUE_APP_API_URL}api/v1/role_permissions`, payload,
+          {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+        .then(function (response) {
+          return response.data;
+        })
+        .catch(function (error) {
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async addPermission({ commit }, payload) {
+      return await axios
+        .post(`${process.env.VUE_APP_API_URL}api/v1/permissions/`, payload,
+          {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+        .then(function (response) {
+          return response.data;
+        })
+        .catch(function (error) {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
     async updateUser({ commit }, payload) {
-     debugger
       return await axios
         .put(`${process.env.VUE_APP_API_URL}api/v1/users/${payload._id}`,
           {
             user_name: payload.user_name,
             user_role_id: payload.user_role_id,
-            user_phone: payload.user_phone, 
-            user_status: payload.user_status, 
+            user_phone: payload.user_phone,
+            user_status: payload.user_status,
           },
           {
             headers: { Authorization: `Bearer ${JwtService.getToken()}` },
@@ -131,17 +384,40 @@ export default {
           return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async updateWhiteUser({ commit }, payload) {
+      return await axios
+        .put(`${process.env.VUE_APP_API_URL}api/v1/white_list/user_id/${payload._id}`,
+          {
+            user_name: payload.user_name,
+            user_canteen_id: payload.user_canteen_id,
+            user_phone: payload.user_phone,
+            user_status: payload.user_status,
+          },
+          {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          }
+        )
+        .then(function (response) {
+          return response.data;
+        })
+        .catch(function (error) {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
     async updateRole({ commit }, payload) {
-     
       return await axios
-        .put(`${process.env.VUE_APP_API_URL}api/v1/roles/${payload._id}`,
+        .patch(`${process.env.VUE_APP_API_URL}api/v1/role_permissions/${payload._id}`,
           {
             role_name: payload.role_name,
-            role_status: payload.role_status, 
-            user_permission: payload.user_permission, 
+            role_status: payload.role_permission_status,
+            permission_name: payload.permission_name,
           },
           {
             headers: { Authorization: `Bearer ${JwtService.getToken()}` },
@@ -151,30 +427,69 @@ export default {
           return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async updatePermission({ commit }, payload) {
+      return await axios
+        .put(`${process.env.VUE_APP_API_URL}api/v1/permissions/${payload._id}`,
+          {
+            permission_name: payload.permission_name,
+            permission_status: payload.permission_status,
+          },
+          {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          }
+        )
+        .then(function (response) {
+          return response.Data;
+        })
+        .catch(function (error) {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
     async removeUser({ commit }, userId) {
       return await axios.delete(`${process.env.VUE_APP_API_URL}api/v1/users/${userId}`, {
-          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-        })
+        headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+      })
         .then(function (response) {
           return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
     async removeRole({ commit }, userId) {
-      return await axios.delete(`${process.env.VUE_APP_API_URL}api/v1/roles/${userId}`, {
-          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-        })
+      return await axios.delete(`${process.env.VUE_APP_API_URL}api/v1/role_permissions/${userId}`, {
+        headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+      })
         .then(function (response) {
           return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async removePermission({ commit }, userId) {
+      return await axios.delete(`${process.env.VUE_APP_API_URL}api/v1/permissions/${userId}`, {
+        headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+      })
+        .then(function (response) {
+          return response.data;
+        })
+        .catch(function (error) {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
@@ -184,20 +499,54 @@ export default {
     resetRoleState({ commit }) {
       commit("setSingleRole", null);
     },
+
+    resetPermissionState({ commit }) {
+      commit("setSinglePermission", null);
+    },
+
   },
   mutations: {
     setUsers(state, payload) {
       state.user.unshift(payload);
     },
+    setmachineFiller(state, payload) {
+      state.machineFiller = payload;
+    },
     setUserList(state, payload) {
-      state.users = payload.filter((x) => {
-        return x.user_role == "food_supplier";
-      });;
+      state.users = payload
+
+      if (payload) {
+
+        state.foodSupplier = payload.filter((x) => {
+
+          return x.user_role == "food_supplier" && x.user_status == "Active";
+        });;
+        state.canteenAdmin = payload.filter((x) => {
+          return x.user_role == "canteen_admin" && x.user_status == "Active";
+        });;
+      } else {
+        state.foodSupplier = []
+        state.canteenAdmin = []
+      }
+
+    },
+    setUserListTotal(state, payload) {
+      state.usersTotal = payload
+    },
+    setwhiteUserList(state, payload) {
+      state.whitelist = payload
+    },
+    setwhiteUserTotal(state, payload) {
+      state.totalRecordWhiteList = payload
     },
     setRoleList(state, payload) {
       state.roles = payload;
     },
+    setRoleListTotal(state, payload) {
+      state.rolesTotal = payload;
+    },
     setPermissionList(state, payload) {
+
       state.permissions = payload;
     },
     setSingleUser(state, payload) {
@@ -205,6 +554,9 @@ export default {
     },
     setSingleRole(state, payload) {
       state.singleRole = payload;
+    },
+    setSinglePermission(state, payload) {
+      state.permissions = payload;
     },
   },
 };

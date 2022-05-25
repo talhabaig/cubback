@@ -21,19 +21,19 @@ export default {
           headers: { Authorization: `Bearer ${JwtService.getToken()}` },
         })
         .then(function (response) {
-          console.log(response);
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
           if (response.status == 200) {
-            console.log(response.data.data);
             commit("setRolesList", response.data.data);
           }
         })
         .catch(function (error) {
           commit("setRolesList", null);
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         })
-        .then(function () {
-          // always executed
-        });
     },
 
     async getRolebyId({ commit }, data) {
@@ -41,26 +41,17 @@ export default {
     },
 
     async addRoleWithPermissions({ commit }, payload) {
-      
-    //  var paramsvalue= {
-    //     roleName:payload.roleName 
-    //   }
-
-      
-    //     payload.permissions.forEach(element=>{
-    //       
-    //       paramsvalue['permissions'] = element; 
-
-    //     })
-
-     var paramsvalue = payload.permissions.reduce((a, v) => ({ ...a, [v]: v}), {})
-     paramsvalue['roleName'] = payload.roleName; 
 
 
-     paramsvalue.map(function(item){
-      
-      return {[item]: 'permissions'}
-    });
+
+      var paramsvalue = payload.permissions.reduce((a, v) => ({ ...a, [v]: v }), {})
+      paramsvalue['roleName'] = payload.roleName;
+
+
+      paramsvalue.map(function (item) {
+
+        return { [item]: 'permissions' }
+      });
 
 
       return await axios
@@ -68,62 +59,16 @@ export default {
           params: paramsvalue,
         })
         .then(function (response) {
-          console.log(response);
           if (response.status == 200) {
             commit("setRoles", payload.data.data);
           }
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
-
-    // async addRole({ commit }, payload) {
-     
-    //   return await axios
-    //     .post(`${process.env.VUE_APP_API_URL}api/User/AddUser`, payload)
-    //     .then(function (response) {
-    //       console.log(response);
-    //       if (response.status) {
-    //         commit("setUsers", payload.data.data);
-    //       }
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // },
-
-    // async updateRole({ commit }, payload) {
-     
-
-    //   return await axios
-    //     .put(`${process.env.VUE_APP_API_URL}api/User/UpdateUser`, payload, {
-    //       headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-    //     })
-    //     .then(function (response) {
-    //       console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // },
-
-    // async removeRole({ commit }, userId) {
-    //   return await axios
-    //     .post(
-    //       `${process.env.VUE_APP_API_URL}api/User/RemoveUser?Id=${userId}`,
-    //       {},
-    //       {
-    //         headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-    //       }
-    //     )
-    //     .then(function (response) {
-    //       console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // },
 
     resetRoleState({ commit }) {
       commit("setSingleRole", null);

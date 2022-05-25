@@ -5,54 +5,63 @@ const axios = require("axios");
 export default {
   state: {
     product: null,
+    vend: null,
+    productTotal: null,
     inventory: [],
+    inventoryTotal: 0,
     singleproduct: null,
   },
   getters: {
     getproductList(state) {
       return state.product;
     },
+    getproductListTotal(state) {
+      return state.productTotal;
+    },
+    getvendList(state) {
+      return state.vend;
+    },
     getinventoryList(state) {
-      debugger;
       return state.inventory;
+    },
+    getinventoryListTotal(state) {
+      return state.inventoryTotal;
     },
     getproductById(state) {
       return state.singleproduct;
     },
   },
   actions: {
-    async productsList({ commit }, payload) {
+  async  bulkproduct({ commit }, payload) {
       return await axios
-        .get(`${process.env.VUE_APP_API_URL}api/v1/product`, {
+        .post(`${process.env.VUE_APP_API_URL}api/v1/product/add`, payload, {
           headers: { Authorization: `Bearer ${JwtService.getToken()}` },
         })
         .then((response) => {
-          if (response.data.success) {
-            commit("setproductList", response.data.product);
-          }
-          return response.data.product;
+          return response
+
         })
-        .catch(function (error) {
-          commit("setproductList", null);
-          console.log(error);
+        .catch((error) => {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
-
-    getproductById({ commit }, data) {
-      commit("setSingleproduct", data);
-    },
-
     async addproduct({ commit }, payload) {
+      var ingradients = payload.ingradients.split(",");
       var formData = new FormData();
       formData.append("product_name", payload.product_name);
       formData.append("product_price", payload.product_price);
       formData.append("product_description", payload.product_description);
-      formData.append("product_recipe", payload.product_recipe);
-      formData.append("prdouct_allergic", payload.prdouct_allergic);
       formData.append("product_VAT", payload.product_VAT);
       formData.append("product_image", payload.product_image);
       formData.append("product_catagory_id", payload.product_catagory_id);
-      formData.append("expiry_date", new Date());
+
+      ingradients.forEach((x) => {
+        formData.append("product_gradient", x);
+      });
+
+      formData.append("product_expiry_date", new Date());
       // formData.append("quantity", payload.quantity);
       return await axios
         .post(`${process.env.VUE_APP_API_URL}api/v1/product`, formData, {
@@ -65,7 +74,96 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+    async productsList({ commit }, payload) {
+      if (payload.pagination) {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/product?pagination=false`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then((response) => {
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.data.success) {
+              commit("setproductList", response.data.product);
+              commit("setproductListTotal", response.data.totalRecord);
+            }
+            return response.data.product;
+          })
+          .catch(function (error) {
+            commit("setproductList", null);
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      } else {
+        return await axios
+          .get(`${process.env.VUE_APP_API_URL}api/v1/product?resultPerPage=${payload.resultPerPage}&currentPage=${payload.currentPage}&pagination=true`, {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          })
+          .then((response) => {
+            if (response.data.message == 'jwt malformed') {
+              window.location.href = '/login'
+            }
+            if (response.data.success) {
+              commit("setproductList", response.data.product);
+              commit("setproductListTotal", response.data.totalRecord);
+            }
+            return response.data.product;
+          })
+          .catch(function (error) {
+            commit("setproductList", null);
+            if (error.response) {
+              return error.response.data
+            }
+          });
+      }
+
+    },
+    async getvendList({ commit }, payload) {
+      return await axios
+        .get(`${process.env.VUE_APP_API_URL}api/v1/vend`, {
+          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+        })
+        .then((response) => {
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
+          if (response.data.success) {
+            commit("setVendList", response.data.data);
+          }
+          return response.data.product;
+        })
+        .catch(function (error) {
+          commit("setVendList", null);
+          if (error.response) {
+            return error.response.data
+          }
+        });
+    },
+
+    getproductById({ commit }, data) {
+      commit("setSingleproduct", data);
+    },
+
+
+    async addvendLimit({ commit }, payload) {
+      return await axios
+        .post(`${process.env.VUE_APP_API_URL}api/v1/vend`, payload, {
+          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error) => {
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
@@ -77,8 +175,7 @@ export default {
             product_name: payload.product_name,
             product_price: payload.product_price,
             product_description: payload.product_description,
-            product_recipe: payload.product_recipe,
-            prdouct_allergic: payload.prdouct_allergic,
+            product_status: payload.product_status,
             product_VAT: payload.product_VAT,
             product_image: payload.product_image,
             expiry_date: payload.expiry_date,
@@ -91,7 +188,9 @@ export default {
           return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
@@ -104,20 +203,30 @@ export default {
           return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
     async getProductByMachineId({ commit }, machineId) {
       return await axios
-        .get(`${process.env.VUE_APP_API_URL}api/v1/inventory/products/machine/${machineId}`, {
-          headers: { Authorization: `Bearer ${JwtService.getToken()}` },
-        })
+        .get(
+          `${process.env.VUE_APP_API_URL}api/v1/inventory/products/machine/${machineId}`,
+          {
+            headers: { Authorization: `Bearer ${JwtService.getToken()}` },
+          }
+        )
         .then(function (response) {
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
           commit("setproductList", response.data.Data);
           return response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
 
@@ -126,36 +235,45 @@ export default {
     },
 
     async inventoryList({ commit }, payload) {
-      if (payload) {
+      if (payload.pagination) {
         return await axios
-          .get(`${process.env.VUE_APP_API_URL}api/v1/inventory/` + payload, {
+          .post(`${process.env.VUE_APP_API_URL}api/v1/inventory/all?pagination=false`, payload, {
             headers: { Authorization: `Bearer ${JwtService.getToken()}` },
           })
           .then((response) => {
-            if (response.data.success) {
-              commit("setInventoryList", response.data.Data);
+            if (response.data.success) { 
+              commit("setInventoryList", response.data.data);
+              commit("setInventoryListTotal", response.data.totalRecord);
             }
-            return response.data.Data;
+            return response.data.data;
           })
           .catch(function (error) {
             commit("setInventoryList", null);
-            console.log(error);
+            if (error.response) {
+              return error.response.data
+            }
           });
       } else {
         return await axios
-          .get(`${process.env.VUE_APP_API_URL}api/v1/inventory/`, {
+          .post(`${process.env.VUE_APP_API_URL}api/v1/inventory/all?resultPerPage=${payload.resultPerPage}&currentPage=${payload.currentPage}&pagination=true`, payload, {
             headers: { Authorization: `Bearer ${JwtService.getToken()}` },
           })
           .then((response) => {
-            if (response.data.success) {
-              commit("setInventoryList", response.data.Data);
+            if (response.data.success) { 
+              commit("setInventoryList", response.data.data);
+              commit("setInventoryListTotal", response.data.totalRecord);
             }
-            return response.data.Data;
+            return response.data.data;
           })
           .catch(function (error) {
-            console.log(error);
+            commit("setInventoryList", null);
+            if (error.response) {
+              return error.response.data
+            }
           });
       }
+
+
     },
     async inventoryListByCanteen({ commit }, payload) {
       return await axios
@@ -166,13 +284,18 @@ export default {
           }
         )
         .then((response) => {
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
           if (response.data.success) {
             commit("setInventoryList", response.data.Data);
           }
           return response.data.Data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
     async inventoryListByMachine({ commit }, payload) {
@@ -181,13 +304,18 @@ export default {
           headers: { Authorization: `Bearer ${JwtService.getToken()}` },
         })
         .then((response) => {
+          if (response.data.message == 'jwt malformed') {
+            window.location.href = '/login'
+          }
           if (response.data.success) {
             commit("setInventoryList", response.data.Data);
           }
           return response.data.Data;
         })
         .catch(function (error) {
-          console.log(error);
+          if (error.response) {
+            return error.response.data
+          }
         });
     },
   },
@@ -198,12 +326,20 @@ export default {
     setproductList(state, payload) {
       state.product = payload;
     },
+    setVendList(state, payload) {
+      state.vend = payload;
+    },
+    setproductListTotal(state, payload) {
+      state.productTotal = payload;
+    },
     setInventoryList(state, payload) {
       if (payload) {
-        state.inventory = [];
-        Object.entries(payload).forEach((a) => {
-          state.inventory.push({ Quantity: a[1].qty, productName: a[1].name });
-        });
+        state.inventory = payload;
+      }
+    },
+    setInventoryListTotal(state, payload) { 
+      if (payload) {
+        state.inventoryTotal = payload;
       }
     },
     setSingleproduct(state, payload) {

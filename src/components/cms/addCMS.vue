@@ -1,8 +1,20 @@
 <template>
-  <form>
-    <v-row>
-      <v-col class="col-6">
-        <v-text-field
+  <v-row>
+    <v-col class="col-6">
+      <label class="regularFont login-font" style=""
+        >Title <small style="color: red">*</small></label
+      >
+      <div class="right-inner-addon input-container pb-0">
+        <input
+          v-model="cmsModel.title"
+          type="text"
+          class="form-control login-field"
+        />
+      </div>
+      <div class="invalid-feedback" v-if="$v.cmsModel.title.$error">
+        <span v-if="$v.cmsModel.title.$error">Title is required</span>
+      </div>
+      <!-- <v-text-field
           v-model="cmsModel.title"
           :error-messages="titleErrors"
           label="Title"
@@ -15,29 +27,31 @@
         <template v-slot:label>
             <div>Title <small style="color: red">*</small></div>
           </template>
-          </v-text-field>
-      </v-col>
-      <v-col class="col-6">
-        <strong>Status</strong>
-        <v-radio-group v-model="cmsModel.status" row>
-          <v-radio label="Active" value="active"></v-radio>
-          <v-radio label="InActive" value="inactive"></v-radio>
-        </v-radio-group>
-      </v-col>
+          </v-text-field> -->
+    </v-col>
+    <v-col class="col-6">
+      <strong>Status</strong>
+      <v-radio-group v-model="cmsModel.status" row>
+        <v-radio label="Active" value="Active"></v-radio>
+        <v-radio label="InActive" value="InActive"></v-radio>
+      </v-radio-group>
+    </v-col>
 
-      <v-col class="col-12">
-        <quill-editor v-model="cmsModel.description" ref="quillEditorA"  >
-        </quill-editor>
-      </v-col>
+    <v-col style="min-height: 300px" class="col-12">
+      <quill-editor v-model="cmsModel.description" ref="quillEditorA">
+      </quill-editor>
+        <div class="invalid-feedback" v-if="$v.cmsModel.description.$error">
+        <span v-if="$v.cmsModel.description.$error">Description is required</span>
+      </div>
+    </v-col>
+    <v-col class="col-12 d-flex justify-center">
+      <v-btn class="mr-4 modal-btn btnn" @click="clear"> Close </v-btn>
 
-      <v-col class="col-12">
-        <v-btn class="mr-4" dark color="main_bg_color" @click="submit">
-          submit
-        </v-btn>
-        <v-btn @click="clear"> Close </v-btn>
-      </v-col>
-    </v-row>
-  </form>
+      <v-btn class="modal-btn" dark color="main_bg_color" @click="submit">
+        Submit
+      </v-btn>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import { validationMixin } from "vuelidate";
@@ -57,14 +71,14 @@ export default {
   validations: {
     cmsModel: {
       title: { required },
-      location: { required },
+      description: { required },
     },
   },
   data: () => ({
     cmsModel: {
       title: "",
       description: "",
-      status: "active",
+      status: "Active",
     },
   }),
 
@@ -77,52 +91,47 @@ export default {
       !this.$v.cmsModel.title.required && errors.push("title is required.");
       return errors;
     },
-    locationErrors() {
-      const errors = [];
-      if (!this.$v.cmsModel.location.$dirty) return errors;
-      !this.$v.cmsModel.location.required &&
-        errors.push("Location is required.");
-      return errors;
-    },
   },
 
   methods: {
     async submit() {
       this.$v.$touch();
-      if (this.cmsModel._id == null) {
-        await this.$store.dispatch("addcms", this.cmsModel).then((res) => {
-          if (res.success) {
-            Swal.fire({
-              title: "",
-              text: res.message,
-              icon: "success",
-            });
-          } else {
-            Swal.fire({
-              title: "Error!",
-              text: res.message,
-              icon: "error",
-            });
-          }
-        });
-      } else {
-        await this.$store.dispatch("updatecms", this.cmsModel).then((res) => {
-          if (res.data.success) {
-            Swal.fire({
-              title: "",
-              text: res.data.success,
-              icon: "success",
-            });
-          } else {
-            Swal.fire({
-              title: "Error!",
-              text: res.data.success,
-              icon: "error",
-            });
-          }
-        });
-      }
-      this.$emit("closeIt");
+      if (!this.$v.$invalid ) {
+        if (this.cmsModel._id == null) {
+          await this.$store.dispatch("addcms", this.cmsModel).then((res) => {
+            if (res.success) {
+              Swal.fire({
+                title: "",
+                text: res.message,
+                icon: "success",
+              });
+            } else {
+              Swal.fire({
+                title: "Error!",
+                text: res.message,
+                icon: "error",
+              });
+            }
+          });
+        } else {
+          await this.$store.dispatch("updatecms", this.cmsModel).then((res) => {
+            if (res.data.success) {
+              Swal.fire({
+                title: "",
+                text: res.data.success,
+                icon: "success",
+              });
+            } else {
+              Swal.fire({
+                title: "Error!",
+                text: res.data.success,
+                icon: "error",
+              });
+            }
+          });
+        }
+        this.$emit("closeIt");
+      }  
     },
     clear() {
       this.$v.$reset();
@@ -134,7 +143,6 @@ export default {
     },
   },
   mounted() {
-    debugger
     if (this.getcmsById) {
       this.cmsModel = this.getcmsById;
     }
@@ -143,4 +151,9 @@ export default {
     this.$store.dispatch("resetcmsState");
   },
 };
-</script> 
+</script> <style>
+.ql-container.ql-snow {
+  border: 1px solid #ccc;
+  min-height: 250px !important;
+}
+</style>

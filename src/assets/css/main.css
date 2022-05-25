@@ -1,0 +1,299 @@
+* {
+  letter-spacing: 1px;
+}
+.left {
+  text-align: left;
+}
+.f-icon {
+  width: 16px;
+}
+.v-btn {
+  border-radius: 8px !important;
+}
+.w-90 {
+  width: 90%;
+}
+.sticky-offset {
+  top: 56px;
+}
+
+#body-row {
+  margin-left: 0;
+  margin-right: 0;
+}
+#sidebar-container {
+  min-height: 100vh;
+  background-color: #ecf5f7;
+  padding: 0;
+}
+
+/* Sidebar sizes when expanded and expanded */
+.sidebar-expanded {
+  width: 230px;
+}
+.sidebar-collapsed {
+  width: 60px;
+}
+
+/* Menu item*/
+#sidebar-container .list-group a {
+  height: 50px;
+  color: #6c757d;
+}
+
+/* Submenu item*/
+#sidebar-container .list-group .sidebar-submenu a {
+  height: 45px;
+  padding-left: 30px;
+}
+.sidebar-submenu {
+  font-size: 0.9rem;
+}
+
+/* Separators */
+.sidebar-separator-title {
+  background-color: #333;
+  height: 35px;
+}
+.sidebar-separator {
+  background-color: #333;
+  height: 25px;
+}
+.logo-separator {
+  background-color: #333;
+  height: 60px;
+}
+
+/* Closed submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
+  content: " \f0d7";
+  font-family: Bebas Neue Pro !important;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+/* Opened submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
+  content: " \f0da";
+  font-family: Bebas Neue Pro !important;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+
+.list-group-item {
+  background: transparent;
+  border: none;
+}
+.list:active {
+  color: var(--orange);
+}
+
+/* 6c757d  */
+
+.right-inner-addon {
+  position: relative;
+  padding-bottom: 20px;
+}
+.right-inner-addon input {
+  padding-right: 35px !important;
+}
+.right-inner-addon i {
+  position: absolute;
+  right: 0px;
+  padding: 12px 12px;
+  pointer-events: none;
+}
+.right-inner-addon2 {
+  position: relative;
+  padding-bottom: 20px;
+}
+.right-inner-addon2 input {
+  padding-right: 35px !important;
+}
+.right-inner-addon2 i {
+  position: absolute;
+  left: 0px;
+  padding: 11px;
+  pointer-events: none;
+}
+.w-100 {
+  width: 100%;
+}
+.border-radius {
+  border-radius: 6px;
+}
+input:focus-visible {
+  outline: none;
+}
+.theme--light.v-data-table thead {
+  background-color: #747474 !important;
+  color: #fff;
+  border-right: 1px solid #fff;
+}
+/* 
+  .theme--light.v-data-table thead th{
+    border-right: 1px solid #fff;
+
+  } */
+.theme--light.v-data-table .v-data-header {
+}
+.theme--light.v-data-table thead tr {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.v-toolbar__content {
+  align-items: center;
+  display: flex;
+  position: relative;
+  z-index: 0;
+  justify-content: center;
+}
+.v-dialog > .v-card > .v-card__text {
+  padding: 20px 52px 35px !important;
+}
+.v-dialog {
+  border-radius: 27px !important;
+}
+
+.v-application .primary--text {
+  color: #559d2e !important;
+  caret-color: #559d2e !important;
+}
+.v-label {
+  top: 3px !important;
+}
+.per-btn {
+  padding: 23.5px 20px !important;
+  font-size: 15px;
+  box-shadow: none !important;
+  color: #000000;
+  background-color: #fff0b5 !important;
+  margin-right: 70px !important;
+}
+.per-btn-gray {
+  padding: 23.5px 20px !important;
+  font-size: 15px;
+  box-shadow: none !important;
+  color: #000000;
+  border: 1px solid #ecf5f7;
+  background-color: #fff !important;
+  margin-right: 70px !important;
+}
+.gray-btn {
+  background-color: #aaaaaa !important;
+  color: #fff !important;
+}
+
+.v-application {
+  font-family: Bebas Neue Pro, Regular !important;
+}
+.title {
+  font-family: Bebas Neue Pro, Regular !important;
+}
+#sidebar-container {
+  cursor: pointer;
+}
+.crossPossition {
+  position: absolute;
+  right: 25px;
+  top: 5px;
+}
+.v-toolbar__content span {
+  font-weight: 700;
+  font-size: 32px !important;
+}
+
+.form-control {
+  font-weight: 370 !important;
+  color: #5a5a5a !important;
+}
+.v-btn {
+  text-transform: none !important;
+  font-size: 19px !important;
+  font-weight: 400 !important;
+  letter-spacing: 1.1px !important;
+}
+.theme--light.v-card > .v-card__text,
+.theme--light.v-card > .v-card__subtitle {
+  color: #00000073 !important;
+}
+.v-application .green {
+  background-color: #559d2e !important;
+  border-color: #559d2e !important;
+}
+.v-application .grey {
+  background-color: #aaaaaa !important;
+  border-color: #aaaaaa !important;
+}
+.login-font {
+  color: #4b4b4b !important;
+  opacity: 1;
+}
+.btnn {
+  background-color: #aaaaaa !important;
+  color: #fff !important;
+}
+.theme--light.v-label {
+  margin-top: -4px !important;
+}
+.v-card__actions > .v-btn.v-btn {
+  padding: 0 30px !important;
+}
+h2 {
+  font-weight: bold !important;
+}
+.v-btn--is-elevated {
+  box-shadow: none !important;
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="password"] {
+    -webkit-text-stroke-width: 0.2em;
+    letter-spacing: 0.2em;
+  }
+}
+::placeholder {
+  -webkit-text-stroke-width: 0em;
+  letter-spacing: 1px;
+}
+table.roleTable {
+  table-layout: auto;
+  width: 100%;
+}
+
+.swal2-styled.swal2-confirm {
+  background-color: #f8932d !important;
+}
+
+.form-group.invalid .invalid-feedback {
+  display: block;
+  text-align: initial;
+}
+.invalid-feedback {
+  display: block !important;
+  width: 100%;
+  margin-top: 0;
+  font-size: 80%;
+  color: #dc3545;
+}
+.swal2-show {
+  border-radius: 27px !important;
+}
+.v-application .text-h6 {
+  font-family: Bebas Neue Pro !important;
+}
+.text-orange {
+  color: #f8932d;
+}
+.w-50 {
+  width: 50% !important;
+}
+.searchfield {
+  padding: 0.375rem !important;
+  width: 357px;
+  height: 38px;
+  padding-left: 35px !important;
+  font-size: 16px;
+  opacity: 1;
+}
