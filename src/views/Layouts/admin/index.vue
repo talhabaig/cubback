@@ -18,7 +18,7 @@
     <!-- Bootstrap row -->
     <div class="row mt-5" id="body-row">
       <!-- Sidebar -->
-     
+
       <div
         id="sidebar-container"
         class="sidebar-expanded d-none d-md-block col-2 mt-5"
@@ -31,7 +31,7 @@
               width="50"
               alt="burger"
             />
-          </div> 
+          </div>
           <div @click="clickProfile">
             <h5>Alexander Anders</h5>
             <div>
@@ -78,10 +78,10 @@
               <span class="title fontstyle">DashBoard</span>
             </span>
           </li>
-          <li  v-if="hasPermission('user_view')" class="navItem">
+          <li v-if="hasPermission('user_view')" class="navItem">
             <span
-              @click="dropdown('UserManagment')"
-              class="navLink arrowAfter userManagment"
+              @click="dropdown('userDropdown')"
+              class="navLink arrowAfter userManagment userDropdown"
             >
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -92,7 +92,7 @@
             </span>
             <div class="UserManagment">
               <span
-              v-if="hasPermission('user_view')"
+                v-if="hasPermission('user_view')"
                 @click="changeRoute('userList')"
                 class="list userList active"
                 >User</span
@@ -103,10 +103,12 @@
                 class="list whitelist_user"
                 >White List Users</span
               >
-              <span   v-if="hasPermission('role_view')" @click="changeRoute('role')" class="list role"
+              <span
+                v-if="hasPermission('role_view')"
+                @click="changeRoute('role')"
+                class="list role"
                 >Roles List</span
               >
-             
             </div>
           </li>
           <li v-if="hasPermission('canteen_view')" class="navItem">
@@ -123,7 +125,7 @@
               >
             </span>
           </li>
-          <li  v-if="hasPermission('machine_view')" class="navItem">
+          <li v-if="hasPermission('machine_view')" class="navItem">
             <span class="navLink">
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -137,7 +139,7 @@
               >
             </span>
           </li>
-          <li  v-if="hasPermission('category_view')" class="navItem">
+          <li v-if="hasPermission('category_view')" class="navItem">
             <span class="navLink">
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -151,10 +153,10 @@
               >
             </span>
           </li>
-          <li  v-if="hasPermission('product_view')" class="navItem">
+          <li v-if="hasPermission('product_view')" class="navItem">
             <span
-              @click="dropdown('ProductManagment')"
-              class="navLink arrowAfter userManagment"
+              @click="dropdown('productDropdown')"
+              class="navLink arrowAfter userManagment productDropdown"
             >
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -167,12 +169,16 @@
               <span @click="changeRoute('productList')" class="list productList"
                 >Products</span
               >
-              <span    v-if="hasPermission('inventory_view')"
+              <span
+                v-if="hasPermission('inventory_view')"
                 @click="changeRoute('inventoryList')"
                 class="list inventoryList"
                 >Inventory</span
               >
-              <span   v-if="hasPermission('wastage_view')" @click="changeRoute('wasteList')" class="list wasteList"
+              <span
+                v-if="hasPermission('wastage_view')"
+                @click="changeRoute('wasteList')"
+                class="list wasteList"
                 >Waste Management</span
               >
               <span
@@ -183,10 +189,10 @@
             </div>
           </li>
 
-          <li  v-if="hasPermission('order_view')" class="navItem">
+          <li v-if="hasPermission('order_view')" class="navItem">
             <span
-              class="navLink arrowAfter userManagment"
-              @click="dropdown('OrderManagement')"
+              class="navLink arrowAfter orderDropdown"
+              @click="dropdown('orderDropdown')"
             >
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -205,7 +211,7 @@
               >
             </div>
           </li>
-          <li  v-if="hasPermission('page_view')" class="navItem">
+          <li v-if="hasPermission('page_view')" class="navItem">
             <span class="navLink">
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -219,7 +225,7 @@
               >
             </span>
           </li>
-          <li  v-if="hasPermission('banner_view')" class="navItem">
+          <li v-if="hasPermission('banner_view')" class="navItem">
             <span class="navLink">
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -233,10 +239,10 @@
               >
             </span>
           </li>
-          <li  v-if="hasPermission('report_view')" class="navItem">
+          <li v-if="hasPermission('report_view')" class="navItem">
             <span
-              @click="dropdown('Report')"
-              class="navLink arrowAfter userManagment"
+              @click="dropdown('reportDropdown')"
+              class="navLink arrowAfter userManagment reportDropdown"
             >
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -254,10 +260,10 @@
               >
             </div>
           </li>
-          <li  v-if="hasPermission('promotion_view')" class="navItem">
+          <li v-if="hasPermission('promotion_view')" class="navItem">
             <span
-              @click="dropdown('Promotion')"
-              class="navLink arrowAfter userManagment"
+              @click="dropdown('promotionDropdown')"
+              class="navLink arrowAfter userManagment promotionDropdown"
             >
               <div class="navLinkIcon">
                 <svg class="svgIcon">
@@ -283,7 +289,7 @@
             </div>
           </li>
         </ul>
-          </div>
+      </div>
       <!-- sidebar-container END -->
 
       <!-- MAIN -->
@@ -1120,6 +1126,7 @@ export default {
     menu: false,
     message: false,
     hints: true,
+    dropdown_closer: "",
     items: [
       {
         icon: "fas fa-users",
@@ -1396,10 +1403,13 @@ export default {
         this.userDetails.user &&
         this.userDetails.user.user_role == "super_admin"
       ) {
-      return true;
+        return true;
       } else {
-        return  this.userDetails &&
-        this.userDetails.user && this.userDetails.permissions.permission_name.includes(obj);
+        return (
+          this.userDetails &&
+          this.userDetails.user &&
+          this.userDetails.permissions.permission_name.includes(obj)
+        );
       }
     },
     changeRoute(obj) {
@@ -1414,40 +1424,16 @@ export default {
         dropdown[0].style.display === "block" ? "none" : "block";
     },
     dropdown(obj) {
-      var dropdown = document.getElementsByClassName(obj);
-      console.log("befre", this.prev_obj)
-      if(this.prev_obj && this.prev_obj !== obj){
-        console.log("ASdasd", this.prev_obj)
-        document.getElementsByClassName(this.prev_obj)[0].style.display = "none";
-
-        document.getElementsByClassName(this.prev_obj)[0].previousElementSibling.firstChild.style.backgroundColor ="#FFFFFF";
-        document.getElementsByClassName(this.prev_obj)[0].previousElementSibling.firstChild.children[0].style.fill ="#F8932D";
-
-        document.getElementsByClassName(this.prev_obj)[0].previousSibling.style.backgroundColor = "transparent";
-        document.getElementsByClassName(this.prev_obj)[0].previousSibling.style.color = "black";
-      }
-      dropdown[0].style.display =
-        dropdown[0].style.display === "block" ? "none" : "block";
-      if (dropdown[0].style.display === "block") {
-        dropdown[0].previousElementSibling.firstChild.style.backgroundColor =
-          "#F8932D";
-        dropdown[0].previousElementSibling.firstChild.children[0].style.fill =
-          "#FFFFFF";
-
-        dropdown[0].previousSibling.style.backgroundColor = "#fff";
-        dropdown[0].previousSibling.style.color = "orange";
-        this.prev_obj = obj;
-
+      var dropdown = document.getElementsByClassName(obj)[0];
+      if (dropdown.classList.contains("activeDropdown")) {
+        dropdown.classList.remove("activeDropdown");
+        this.dropdown_closer = "";
       } else {
-        dropdown[0].previousElementSibling.firstChild.style.backgroundColor =
-          "#FFFFFF";
-        dropdown[0].previousElementSibling.firstChild.children[0].style.fill =
-          "#F8932D";
-
-        dropdown[0].previousSibling.style.backgroundColor = "transparent";
-        dropdown[0].previousSibling.style.color = "black";
+        dropdown.classList.add("activeDropdown");
+        var prev_obj = document.getElementsByClassName(this.dropdown_closer);
+        this.dropdown_closer = obj;
+        prev_obj[0].classList.remove("activeDropdown");
       }
-
     },
     logOut() {
       this.menu = false;
@@ -1585,6 +1571,3 @@ ul#menu:target {
   font-family: Bebas Neue Pro, Regular !important;
 }
 </style>
-
-
- 

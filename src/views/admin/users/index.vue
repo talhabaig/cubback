@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <div class="d-flex justify-space-around align-center mb-2 mt-3">
@@ -351,10 +350,10 @@
       <vue-blob-json-csv file-type="csv" file-name="sample" :data="json_data">
         <v-btn class="primary" @click="check()">Download</v-btn>
       </vue-blob-json-csv>
-    </template> 
+    </template>
   </div>
 </template>
-    <!------------------------------------------------------------------------------>
+<!------------------------------------------------------------------------------>
 
 <script>
 import addUser from "../../../components/users/addUser.vue";
@@ -370,11 +369,11 @@ export default {
   },
   data() {
     return {
-      json_data:[],
+      json_data: [],
       bulkdialog: false,
       page: 1,
       pageCount: 10,
-      currentPage: 1, 
+      currentPage: 1,
       itemsPerPage: 10,
       isEdit: false,
       dialog: false,
@@ -447,17 +446,15 @@ export default {
     },
   },
   methods: {
-    check(){
-    
-      this.items.forEach((e)=>{
+    check() {
+      this.items.forEach((e) => {
         this.json_data.push({
           Name: e.user_name,
           Email: e.user_email,
           Phone: e.user_phone,
           Role: e.user_role,
-        },)
-      })
-      
+        });
+      });
     },
     updateCurrentPage(obj) {
       if (obj >= 1) {
