@@ -386,6 +386,3 @@ export default {
   border-bottom: 1px solid #f8932d;
 }
 </style>
-
-
-   
